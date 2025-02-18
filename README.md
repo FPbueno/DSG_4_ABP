@@ -3,7 +3,10 @@
 </p>
 <h1 align="center">DSG - DATA SOLUTIONS GROUP</h1>
 
-## Desafio problema:
+ 
+ > Status: Developing ⚠️
+
+## 💡 Desafio problema:
 Os derivadores são amplamente utilizados em estudos oceanográficos, como análise de correntes,
 dispersão de óleo e operações de resgate. Projetados para seguir as correntes locais, permitem o
 cálculo de velocidade e outros parâmetros cinemáticos e dinâmicos a partir de suas posições ao
@@ -16,7 +19,7 @@ desafio, portanto, é desenvolver uma solução própria baseada em IoT, que pos
 rastreamento dos derivadores e ofereça uma interface gráfica para visualização em tempo real dos
 dados transmitidos.
 
-## Estrutura do projeto: (preencher conforme o necessário)
+## 📂 Estrutura do projeto: (preencher conforme o necessário)
 ```
 /Front
 │
@@ -39,4 +42,63 @@ dados transmitidos.
 ├── .gitignore              # Arquivos a serem ignorados pelo git
 └── README.md               
 ```
+## ⚙️ Instalação
 
+### Entregas (arrumar os links)
+**Sprint**  | **Inicio / Fim** | **Status**         | **Link**
+:---------: | :------:    | :-------:          | :-------:
+01          | 24/03 - 15/04   | ⚠️                | <a href="#">Sprint 1</a>
+02          | 16/04 - 13/05   | ⚠️                | <a href="#">Sprint 2</a>
+03          | 14/05 - 10/06   | ⚠️               | <a href="#">Sprint 3</a>
+
+## 👩‍💻Equipe
+<table>
+  <thead>
+    <tr>
+      <th>Função</th>
+      <th>Integrante</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sem definição</td>
+      <td>
+        <a href="https://github.com/FPBueno">
+          <img src="https://github.com/FPBueno.png" width="50" height="50" style="border-radius: 50%;" alt="FPBueno">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>Sem definição</td>
+      <td>
+        <a href="https://github.com/MingRenan">
+          <img src="https://github.com/MingRenan.png" width="50" height="50" style="border-radius: 50%;" alt="MingRenan">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>Sem definição</td>
+      <td>
+        <a href="https://github.com/Isaac-Exon">
+          <img src="https://github.com/Isaac-Exon.png" width="50" height="50" style="border-radius: 50%;" alt="Isaac-Exon">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>Sem definição</td>
+      <td>
+        <a href="https://github.com/">
+          <img src="https://github.com/.png" width="50" height="50" style="border-radius: 50%;" alt="">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>Sem definição</td>
+      <td>
+        <a href="https://github.com/">
+          <img src="https://github.com/.png" width="50" height="50" style="border-radius: 50%;" alt="">
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
