@@ -44,7 +44,7 @@ dados transmitidos.
 ```
 ## ⚙️ Instalação
 
-### Entregas (arrumar os links)
+### 📋 Entregas (arrumar os links)
 **Sprint**  | **Inicio / Fim** | **Status**         | **Link**
 :---------: | :------:    | :-------:          | :-------:
 01          | 24/03 - 15/04   | ⚠️                | <a href="#">Sprint 1</a>
