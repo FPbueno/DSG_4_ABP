@@ -12,3 +12,28 @@ sistema de transmissão de dados via telefonia celular-ainda depende de soluçõ
 desafio, portanto, é desenvolver uma solução própria baseada em IoT, que possibilite o
 rastreamento dos derivadores e ofereça uma interface gráfica para visualização em tempo real dos
 dados transmitidos.
+
+## Estrutura do projeto: (preencher conforme o necessário)
+```
+/Front
+│
+├── /src                   
+│   ├── /       
+│   ├── /            
+│   ├── /             
+│   └── /             
+├── package.json            # Dependências e scripts do projeto
+├── .gitignore              # Arquivos a serem ignorados pelo git
+└── README.md 
+/Back
+│
+├── /src                    
+│   ├── /controllers        
+│   ├── /models             
+│   ├── /database             
+│   └── /utils             
+├── package.json            # Dependências e scripts do projeto
+├── .gitignore              # Arquivos a serem ignorados pelo git
+└── README.md               
+```
+
