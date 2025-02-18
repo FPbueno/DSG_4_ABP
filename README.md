@@ -1,4 +1,7 @@
-# DSG Team
+<p align="center">
+  <img src="documents/images/logo.jpg" width="300" height="300">
+</p>
+<h1 align="center">DSG - DATA SOLUTIONS GROUP</h1>
 
 ## Desafio problema:
 Os derivadores são amplamente utilizados em estudos oceanográficos, como análise de correntes,
