@@ -71,6 +71,14 @@ dados transmitidos.
     <tr>
       <td>Sem definição</td>
       <td>
+        <a href="https://github.com/Marcelly-cris">
+          <img src="https://github.com/Marcelly-cris.png" width="50" height="50" style="border-radius: 50%;" alt="Marcelly-cris">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>Sem definição</td>
+      <td>
         <a href="https://github.com/MingRenan">
           <img src="https://github.com/MingRenan.png" width="50" height="50" style="border-radius: 50%;" alt="MingRenan">
         </a>
@@ -87,16 +95,8 @@ dados transmitidos.
     <tr>
       <td>Sem definição</td>
       <td>
-        <a href="https://github.com/">
-          <img src="https://github.com/.png" width="50" height="50" style="border-radius: 50%;" alt="">
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>Sem definição</td>
-      <td>
-        <a href="https://github.com/">
-          <img src="https://github.com/.png" width="50" height="50" style="border-radius: 50%;" alt="">
+        <a href="https://github.com/AnaBarbancho">
+          <img src="https://github.com/AnaBarbancho.png" width="50" height="50" style="border-radius: 50%;" alt="AnaBarbancho">
         </a>
       </td>
     </tr>
