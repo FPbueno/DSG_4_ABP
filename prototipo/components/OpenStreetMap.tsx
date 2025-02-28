@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, Platform } from "react-native";
+import {
+  View,
+  TextInput,
+  Text,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import tw from "twrnc";
 
@@ -70,7 +76,14 @@ const OpenStreetMap = () => {
       </View>
 
       <View style={tw`mt-6 mx-4`}>
-        <Button title="Atualizar Mapa" onPress={() => {}} />
+        <TouchableOpacity
+          style={tw`bg-blue-800 p-3 rounded-lg`}
+          onPress={() => {}}
+        >
+          <Text style={tw`text-white text-center text-lg font-semibold`}>
+            Atualizar Mapa
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <WebView originWhitelist={["*"]} source={{ html }} style={tw`mt-4`} />

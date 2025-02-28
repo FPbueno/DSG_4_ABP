@@ -4,7 +4,7 @@ import {
   Text,
   ActivityIndicator,
   TextInput,
-  Button,
+  TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
   TouchableWithoutFeedback,
@@ -68,11 +68,16 @@ const WeatherCard = () => {
                 value={userInput}
                 onChangeText={setUserInput}
               />
-              <Button
-                title="Buscar Cidade"
+
+              <TouchableOpacity
+                style={tw`w-full py-3 mb-4 bg-blue-800 rounded-lg items-center`}
                 onPress={() => setCity(userInput)}
-                color="#11457c"
-              />
+              >
+                <Text style={tw`text-white text-lg font-semibold`}>
+                  Buscar Cidade
+                </Text>
+              </TouchableOpacity>
+
               {error ? (
                 <Text style={tw`text-red-500`}>{error}</Text>
               ) : weatherData ? (
