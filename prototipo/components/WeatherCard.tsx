@@ -53,13 +53,13 @@ const WeatherCard = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={tw`flex-1 bg-white`}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Ajuste para iOS
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={tw`flex-1`}>
           <ScrollView
             contentContainerStyle={tw`flex-grow`}
-            keyboardShouldPersistTaps="handled" // Garante que o scroll funcione ao tocar fora do campo
+            keyboardShouldPersistTaps="handled"
           >
             <View style={tw`items-center p-4`}>
               <TextInput
