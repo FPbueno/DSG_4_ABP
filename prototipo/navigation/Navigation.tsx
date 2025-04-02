@@ -1,30 +1,47 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { View, StyleSheet } from "react-native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "../screens/Home";
 import SettingsScreen from "../screens/Settings";
-import Footer from "../components/Footer";
 import OpenStreetMap from "../components/OpenStreetMap";
+import Login from "../screens/Login";
+import Cadastro from "../screens/Cadastro";
+import Footer from "../components/Footer";
+import CustomDrawer from "../components/CustomDrawer"; // Menu personalizado (opcional)
 
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+
+// Stack de autenticação
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Login" component={Login} />
+    <Stack.Screen name="Cadastro" component={Cadastro} />
+  </Stack.Navigator>
+);
+
+// Stack principal
+const MainStack = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <CustomDrawer {...props} />} // Menu lateral personalizado
+    screenOptions={{ headerShown: false }}
+  >
+    <Drawer.Screen name="Home" component={HomeScreen} />
+    <Drawer.Screen name="Map" component={OpenStreetMap} />
+    <Drawer.Screen name="Settings" component={SettingsScreen} />
+  </Drawer.Navigator>
+);
 
 const Navigation = () => {
   return (
-    <View style={styles.container}>
-      <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Map" component={OpenStreetMap} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="AuthStack" component={AuthStack} />
+        <Stack.Screen name="MainStack" component={MainStack} />
       </Stack.Navigator>
-      <Footer />
-    </View>
+    </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default Navigation;

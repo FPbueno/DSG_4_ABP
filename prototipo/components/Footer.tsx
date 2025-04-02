@@ -15,7 +15,7 @@ const Footer = () => {
 
   return (
     <View
-      style={tw`absolute bottom-0 w-full bg-blue-800 p-4 flex-row justify-around items-center`}
+      style={tw`absolute bottom-0 w-full bg-[#071025] p-4 flex-row justify-around items-center`}
     >
       <TouchableOpacity
         style={tw`items-center`}
