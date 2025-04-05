@@ -15,6 +15,7 @@ type RootStackParamList = {
   Login: undefined;
   Cadastro: undefined;
   MainStack:undefined;
+  Recuperacao:undefined;
 };
 
 // Definir o tipo para a prop navigation
@@ -75,6 +76,11 @@ export default function Login({ navigation }: Props) { // Tipando navigation
           onPress={() => navigation.navigate('Cadastro')} // Ir para Cadastro
         >
           <Text style={styles.buttonTexto}>Criar Conta</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Recuperacao')} // Ir para Cadastro
+        >
+          <Text style={styles.buttonTexto}>Esqueceu a senha?</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

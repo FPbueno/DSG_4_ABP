@@ -2,8 +2,23 @@ import React from "react";
 import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
+import { StackNavigationProp } from "@react-navigation/stack";
 
-const SettingsScreen = () => {
+
+type RootStackParamList = {
+  Settings:undefined;
+  Login:undefined;
+  ConfiguraConta:undefined;
+  Privacidade:undefined;
+};
+
+type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Settings'>;
+
+interface Props {
+  navigation: SettingsScreenNavigationProp;
+}
+
+const SettingsScreen = ({navigation}:Props) => {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(false);
 
   return (
@@ -18,7 +33,7 @@ const SettingsScreen = () => {
       </TouchableOpacity>
 
       {/* Opção de Conta */}
-      <TouchableOpacity style={tw`w-full flex-row items-center p-4 bg-gray-800 rounded-lg mb-4`}>
+      <TouchableOpacity style={tw`w-full flex-row items-center p-4 bg-gray-800 rounded-lg mb-4`} onPress={() => navigation.navigate('ConfiguraConta')}>
         <Ionicons name="person-outline" size={24} color="white" />
         <Text style={tw`text-white text-lg ml-3`}>Conta</Text>
       </TouchableOpacity>
@@ -37,13 +52,13 @@ const SettingsScreen = () => {
       </View>
 
       {/* Privacidade */}
-      <TouchableOpacity style={tw`w-full flex-row items-center p-4 bg-gray-800 rounded-lg mb-4`}>
+      <TouchableOpacity style={tw`w-full flex-row items-center p-4 bg-gray-800 rounded-lg mb-4`} onPress={() => navigation.navigate('Privacidade')}>
         <Ionicons name="lock-closed-outline" size={24} color="white" />
         <Text style={tw`text-white text-lg ml-3`}>Privacidade</Text>
       </TouchableOpacity>
 
       {/* Botão de Logout */}
-      <TouchableOpacity style={tw`w-full flex-row items-center p-4 bg-red-600 rounded-lg mt-10`}>
+      <TouchableOpacity style={tw`w-full flex-row items-center p-4 bg-red-600 rounded-lg mt-10`} onPress={() => navigation.navigate('Login')}>
         <Ionicons name="log-out-outline" size={24} color="white" />
         <Text style={tw`text-white text-lg ml-3`}>Sair</Text>
       </TouchableOpacity>

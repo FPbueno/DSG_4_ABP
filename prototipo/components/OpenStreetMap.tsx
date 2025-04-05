@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import tw from "twrnc";
+import Footer from "./Footer";
 
 const OpenStreetMap = () => {
   const [latitude, setLatitude] = useState<string>("-23.55052");
@@ -87,6 +88,7 @@ const OpenStreetMap = () => {
       </View>
 
       <WebView originWhitelist={["*"]} source={{ html }} style={tw`mt-4`} />
+    <Footer />
     </View>
   );
 };
