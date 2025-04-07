@@ -1,12 +1,21 @@
 import { Router, Request, Response } from "express";
 import UserController from "../controllers/UserController";
-import userRoute from "./userRoute"
+import LocationController from "../controllers/LocationController";
+import userRoute from "./userRoute";
 
 const routes = Router();
-routes.post("/cadastro", UserController.create)
-routes.post("/login", UserController.login)
+
+// Rotas de usuário
+routes.post("/cadastro", UserController.create);
+routes.post("/login", UserController.login);
 routes.use("/user", userRoute);
 
-routes.use( '*', (_:Request, res:Response) => res.json({error: "Requisição desconhecida"}));
+// Rotas de localização
+routes.post("/locations", LocationController.create);
+routes.get("/locations", LocationController.list);
+
+routes.get("/", (req: Request, res: Response) => {
+  res.status(200).json({ message: "API funcionando corretamente!" });
+});
 
 export default routes;
