@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import {query} from "../database/connection";
+import bcrypt from "bcrypt";
+import { hasOnlyExpressionInitializer } from "typescript";
 
 
 class UserController {
@@ -21,20 +23,24 @@ class UserController {
   }
 
   public async create(req: Request, res: Response): Promise<void> {
-    const { mail, password, profile } = req.body;
+    const { name, mail, phone, country, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     if (!mail) {
       res.json({ erro: "Forneça o e-mail" });
     } else if (!password) {
       res.json({ erro: "Forneça a senha" });
-    } else if (!profile) {
-      res.json({ erro: "Forneça o perfil" });
-    } else if (profile !== "adm" && profile !== "user") {
-      res.json({ erro: "O perfil precisa ser adm ou user" });
+    } else if (!name) {
+      res.json({ erro: "Forneça o nome" });
+    } else if (!phone) {
+      res.json({ erro: "Forneça o telefone" });
+    } else if (!country) {
+      res.json({ erro: "Forneça o país" });
     } else {
       const response: any = await query(
-        "INSERT INTO users(mail,password,profile) VALUES ($1,$2,$3) RETURNING id, mail, profile",
-        [mail, password, profile]
+        "INSERT INTO usuario(nome, email, telefone, pais, senha ) VALUES ($1,$2,$3,$4,$5) RETURNING nome, email, telefone, pais, senha",
+        [name, mail, phone, country, hashedPassword ]
       );
 
       if (response && response.id) {

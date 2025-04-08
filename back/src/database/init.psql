@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS usuario (
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(50),
+	email VARCHAR(100) UNIQUE,
+	telefone VARCHAR(12),
+	pais VARCHAR(85),
+	senha TEXT
+);
+ 
+CREATE TABLE IF NOT EXISTS locations (
+	id SERIAL PRIMARY KEY,
+	id_usuario INTEGER,
+	FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+	latitude DECIMAL(9, 6) NOT NULL,
+	longitude DECIMAL(9, 6) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
