@@ -15,6 +15,7 @@ import {
 import tw from "twrnc";
 import { APIKEY } from "@env";
 
+
 const apiKey = APIKEY;
 
 const WeatherCard = () => {
@@ -82,10 +83,10 @@ const WeatherCard = () => {
                 <Text style={tw`text-red-500`}>{error}</Text>
               ) : weatherData ? (
                 <View
-                  style={tw`w-full flex-row flex-wrap justify-between mb-4 mt-5`}
+                  style={tw`w-full flex- flex-wrap justify-center mb-4 mt-5`}
                 >
                   <View
-                    style={tw`w-1/2 p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
                   >
                     <Text style={tw`text-sm font-semibold text-gray-600`}>
                       Temperatura
@@ -96,7 +97,7 @@ const WeatherCard = () => {
                   </View>
 
                   <View
-                    style={tw`w-1/2 p-2 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
                   >
                     <Text style={tw`text-sm font-semibold text-gray-600`}>
                       Umidade
@@ -107,7 +108,7 @@ const WeatherCard = () => {
                   </View>
 
                   <View
-                    style={tw`w-1/2 space-x px-2 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
                   >
                     <Text style={tw`text-sm font-semibold text-gray-600`}>
                       Vento
@@ -118,7 +119,7 @@ const WeatherCard = () => {
                   </View>
 
                   <View
-                    style={tw`w-1/2 p-2 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
                   >
                     <Text style={tw`text-sm font-semibold text-gray-600`}>
                       Precipitação

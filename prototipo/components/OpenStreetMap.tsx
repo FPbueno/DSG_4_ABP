@@ -9,7 +9,7 @@ import {
 import { WebView } from "react-native-webview";
 import tw from "twrnc";
 import Footer from "./Footer";
-
+import Header from "./Header";
 const OpenStreetMap = () => {
   const [latitude, setLatitude] = useState<string>("-23.55052");
   const [longitude, setLongitude] = useState<string>("-46.633308");
@@ -48,7 +48,8 @@ const OpenStreetMap = () => {
 
   return (
     <View style={tw`flex-1 bg-white`}>
-      <View style={tw`p-4 pt-10`}>
+      <Header />
+      <View style={tw`p-4 pt-8`}>
         <Text style={tw`text-2xl font-bold text-center`}>
           Insira Coordenadas
         </Text>

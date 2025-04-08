@@ -27,16 +27,16 @@ const Privacidade = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-white`}>
-      <ScrollView contentContainerStyle={tw`p-4`}>
+    <SafeAreaView style={tw`flex-1 bg-[#071025]`}>
+      <ScrollView contentContainerStyle={tw`p-4 mt-10`}>
         <View style={tw`mb-6`}>
-          <Text style={tw`text-2xl font-bold text-blue-800 mb-4`}>Privacidade</Text>
+          <Text style={tw`text-2xl font-bold text-white text-center mb-10`}>Privacidade</Text>
 
           {/* Senha Atual */}
           <View style={tw`mb-4`}>
-            <Text style={tw`text-lg font-semibold text-gray-700`}>Senha Atual</Text>
+            <Text style={tw`text-lg font-semibold text-white`}>Senha Atual</Text>
             <TextInput
-              style={tw`w-full p-3 mt-2 bg-white rounded-xl border-2 border-blue-800`}
+              style={tw`w-full p-3 mt-2 bg-[#0A1538] rounded-xl border-2 border-black text-white`}
               value={senhaAtual}
               onChangeText={setSenhaAtual}
               placeholder="Digite sua senha atual"
@@ -46,9 +46,9 @@ const Privacidade = () => {
 
           {/* Nova Senha */}
           <View style={tw`mb-4`}>
-            <Text style={tw`text-lg font-semibold text-gray-700`}>Nova Senha</Text>
+            <Text style={tw`text-lg font-semibold text-white`}>Nova Senha</Text>
             <TextInput
-              style={tw`w-full p-3 mt-2 bg-white rounded-xl border-2 border-blue-800`}
+              style={tw`w-full p-3 mt-2 bg-[#0A1538] rounded-xl border-2 border-black text-white`}
               value={novaSenha}
               onChangeText={setNovaSenha}
               placeholder="Digite a nova senha"
@@ -58,9 +58,9 @@ const Privacidade = () => {
 
           {/* Confirmar Nova Senha */}
           <View style={tw`mb-6`}>
-            <Text style={tw`text-lg font-semibold text-gray-700`}>Confirmar Nova Senha</Text>
+            <Text style={tw`text-lg font-semibold text-white`}>Confirmar Nova Senha</Text>
             <TextInput
-              style={tw`w-full p-3 mt-2 bg-white rounded-xl border-2 border-blue-800`}
+              style={tw`w-full p-3 mt-2 bg-[#0A1538] rounded-xl border-2 border-black text-white`}
               value={confirmarNovaSenha}
               onChangeText={setConfirmarNovaSenha}
               placeholder="Confirme a nova senha"
@@ -70,10 +70,10 @@ const Privacidade = () => {
 
           {/* Botão Alterar Senha */}
           <TouchableOpacity
-            style={tw`w-full py-3 bg-blue-800 rounded-lg items-center`}
+            style={tw`bg-[#D2042D] py-2.5 px-5 rounded-[20px] w-full my-1.5`}
             onPress={alterarSenha}
           >
-            <Text style={tw`text-white text-lg font-semibold`}>Alterar Senha</Text>
+            <Text style={tw`text-white text-lg font-semibold text-center`}>Alterar Senha</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

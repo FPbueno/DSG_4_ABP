@@ -1,20 +1,28 @@
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useFonts } from "expo-font";
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, SafeAreaView } from "react-native";
 import tw from "twrnc"; // Para estilização com Tailwind CSS no React Native
+
 type RootStackParamList = {
-    Login:undefined;
-    Cadastro:undefined;
+  Login: undefined;
+  Cadastro: undefined;
 };
 
 type RecuperacaoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Cadastro'>;
 
 interface Props {
-    navigation: RecuperacaoScreenNavigationProp;
+  navigation: RecuperacaoScreenNavigationProp;
 }
+
 const Recuperacao = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+    'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+  });
 
   const handleRecuperarSenha = async () => {
     if (!email) {
@@ -40,38 +48,42 @@ const Recuperacao = ({ navigation }: Props) => {
     >
       <SafeAreaView style={tw`flex-1 justify-center bg-[#071025] items-center p-4`}>
         <View style={tw`w-full max-w-md`}>
-          <Text style={tw`text-2xl font-bold text-[#fff] mb-6 text-center`}>
+          <Text style={[tw`text-2xl text-[#fff] mb-6 text-center`, { fontFamily: 'Poppins-Regular' }]}>
             Recuperação de Senha
           </Text>
 
-          <Text style={tw`text-lg text-[#fff] mb-4`}>Digite seu Email para recuperar sua senha</Text>
+          <Text style={[tw`text-base text-[#fff] mb-4`, { fontFamily: 'Poppins-Regular' }]}>
+            Digite seu Email para recuperar sua senha
+          </Text>
+
 
           <TextInput
-            style={tw`w-full p-3 mb-4 text-[16px] text-white bg-[#0A1538] rounded-xl border-2 border-black`}
+            style={[tw`w-full p-3 mb-4 text-[16px] text-white bg-[#0A1538] rounded-xl border-2 border-black`, { fontFamily: 'Poppins-Regular' }]}
             placeholder="Seu Email"
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
           />
 
+
           <TouchableOpacity
-            style={tw`w-full py-3 mb-4 bg-[#D2042D] rounded-lg items-center`}
+            style={tw`w-full py-3 mb-4 bg-[#D2042D] rounded-lg items-center `}
             onPress={handleRecuperarSenha}
             disabled={loading}
           >
-            {loading ? (
-              <Text style={tw`text-white text-lg`}>Enviando...</Text>
+           {loading ? (
+              <Text style={tw`text-white text-lg font-poppins`}>Enviando...</Text>
             ) : (
-              <Text style={tw`text-white text-lg font-semibold`}>Recuperar Senha</Text>
+              <Text style={[tw`text-white text-lg`, { fontFamily: 'Poppins-Regular' }]}>Recuperar Senha</Text>
             )}
           </TouchableOpacity>
 
           <View style={tw`flex-row justify-center`}>
-            <Text style={tw`text-sm text-gray-500`}>
+            <Text style={tw`text-sm font-poppins text-gray-500`}>
               Lembrou da sua senha?{" "}
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={tw`text-sm text-blue-600`}>Voltar para Login</Text>
+              <Text style={tw`text-sm font-poppins text-blue-600`}>Voltar para Login</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -41,7 +41,7 @@ const MainStack = () => (
 
 const Navigation = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer >
       <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="AuthStack" component={AuthStack} />
         <Stack.Screen name="MainStack" component={MainStack} />

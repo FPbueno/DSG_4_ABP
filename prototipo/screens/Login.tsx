@@ -43,8 +43,8 @@ export default function Login({ navigation }: Props) { // Tipando navigation
     <SafeAreaView style={styles.field}>
       <View style={styles.fieldset}>
         <Image source={require('../assets/image.png')} style={styles.imagem} />
-        <Text style={styles.texto}>Bem-vindo ao AquaTrace</Text>
-        <Text style={styles.text}>Login</Text>
+        <Text style={styles.texto}>Bem vindo ao AquaTrace</Text> {/* Título */}
+        <Text style={styles.text}>Login</Text> {/* Subtítulo */}
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -87,11 +87,7 @@ export default function Login({ navigation }: Props) { // Tipando navigation
   );
 }
 
-
-
-// Estilos continuam iguais...
-
-
+// Estilos ajustados
 
 const styles = StyleSheet.create({
   imagem: {
@@ -103,24 +99,18 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: 'bold', 
     fontSize: 20,
-    fontFamily: 'Sans-serif',
+    fontFamily: 'poppins-regular',
     color: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+    textAlign: 'center', // Garante que o texto fique centralizado
     marginBottom: 20,
-    textAlign:'center'
   },
   texto: {
     fontWeight: 'bold', 
-    fontSize: 20,
-    fontFamily: 'Sans-serif',
+    fontSize: 22, // Aumentando o tamanho do texto
+    fontFamily: 'poppins-regular',
     color: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+    textAlign: 'center', // Centraliza o texto na tela
     marginBottom: 60,
-    textAlign:'center'
   },
   field: {
     flex: 1,
@@ -134,58 +124,58 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    fontFamily: 'Sans-serif',
+    fontFamily: 'poppins-regular',
     height: 45,
     borderColor: '#000',
     borderWidth: 1,
-    color: '#FFFFFF',
+    color: 'black',
     paddingHorizontal: 10,
     marginTop: 8,
     fontSize: 16,
-    backgroundColor: '#0A1538',
+    backgroundColor: '#F8F8F8',
     borderRadius: 15,
   },
   buttonContainer: {
-    flexDirection: 'column', // Alinha os botões verticalmente
-    justifyContent: 'center', // Garante que os botões fiquem centrados
-    width: '80%', // Define a largura dos botões
+    flexDirection: 'column',
+    justifyContent: 'center', 
+    width: '80%',
     marginTop: 20,
-    alignItems: 'center', // Centraliza os botões horizontalmente
+    alignItems: 'center',
   },
   button: {
     backgroundColor: '#D2042D',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
-    width: '100%', // Faz o botão de login ocupar toda a largura disponível
-    marginVertical: 5, // Espaçamento entre os botões
+    width: '100%',
+    marginVertical: 5, 
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
+    fontFamily:'poppins-regular'
   },
   buttonTexto: {
     color: '#fff',
     fontSize: 15,
     textAlign: 'center',
-    marginBottom: 10, // Adiciona espaçamento abaixo do texto
+    marginBottom: 10,
+    fontFamily:'poppins-regular'
+
   },
-  // Estilo para a mensagem de erro
   errorText: {
     color: 'red',
     marginTop: 10,
     fontSize: 16,
     textAlign: 'center',
   },
-  // Estilo para o contêiner das informações
   infoContainer: {
     marginTop: 20,
     width: '80%',
     alignItems: 'center',
   },
-  // Estilo para o texto das informações
   infoText: {
     color: '#fff',
     fontSize: 16,

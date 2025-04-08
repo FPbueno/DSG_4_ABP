@@ -1,3 +1,4 @@
+import { useFonts } from "expo-font";
 import React, { useState } from "react";
 import {
   View,
@@ -16,7 +17,10 @@ const ConfiguraConta = () => {
   const [nome, setNome] = useState("João Silva");
   const [email, setEmail] = useState("joao.silva@example.com");
   const [foto, setFoto] = useState("https://via.placeholder.com/150"); // Foto inicial
-
+  const [fontsLoaded] = useFonts({
+    'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+    'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+  });
   const salvarAlteracoes = () => {
     // Lógica para salvar alterações
     Alert.alert("Sucesso", "As alterações foram salvas com sucesso!");
@@ -29,23 +33,23 @@ const ConfiguraConta = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-white`}>
-      <ScrollView contentContainerStyle={tw`p-4`}>
+    <SafeAreaView style={tw`flex-1 bg-[#071025]`}>
+      <ScrollView contentContainerStyle={tw`p-4 mt-20`}>
         <View style={tw`items-center mb-6`}>
           {/* Foto de Perfil */}
           <TouchableOpacity onPress={selecionarFoto}>
             <Image
               source={{ uri: foto }}
-              style={tw`w-32 h-32 rounded-full border-4 border-black mb-4`}
+              style={tw`w-32 h-32 rounded-full border-4 border-white mb-4`}
             />
-            <Text style={tw`text-blue-800 font-semibold`}>Alterar Foto</Text>
+            <Text style={[tw`text-white font-semibold pl-6`, { fontFamily: 'poppins-regular' }]}>Alterar Foto</Text>
           </TouchableOpacity>
 
           {/* Nome */}
           <View style={tw`mb-4 w-full`}>
-            <Text style={tw`text-lg font-semibold text-white`}>Nome</Text>
+            <Text style={[tw`text-lg font-semibold text-white`, { fontFamily: 'poppins-regular' }]}>Nome</Text>
             <TextInput
-              style={tw`w-full p-3 mt-2 bg-white rounded-xl border-2 border-black`}
+              style={[tw` h-12 border border-black text-black px-2.5 mt-2 text-base bg-[#F8F8F8] rounded-lg`, { fontFamily: 'poppins-regular' }]}
               value={nome}
               onChangeText={setNome}
               placeholder="Digite seu nome"
@@ -54,9 +58,9 @@ const ConfiguraConta = () => {
 
           {/* E-mail */}
           <View style={tw`mb-4 w-full`}>
-            <Text style={tw`text-lg font-semibold text-white`}>E-mail</Text>
+            <Text style={[tw`text-lg font-semibold text-white`, { fontFamily: 'poppins-regular' }]}>E-mail</Text>
             <TextInput
-              style={tw`w-full p-3 mt-2 bg-[#071025] rounded-xl border-2 border-black`}
+              style={[tw` h-12 border border-black text-black px-2.5 mt-2 text-base bg-[#F8F8F8] rounded-lg`, { fontFamily: 'poppins-regular' }]}
               value={email}
               onChangeText={setEmail}
               placeholder="Digite seu e-mail"
@@ -66,10 +70,10 @@ const ConfiguraConta = () => {
 
           {/* Botão Salvar */}
           <TouchableOpacity
-            style={tw`w-full py-3 bg-[#D2042D] rounded-lg items-center`}
+            style={tw`bg-[#D2042D] py-2.5 px-5 rounded-[20px] w-full my-1.5`}
             onPress={salvarAlteracoes}
           >
-            <Text style={tw`text-white text-lg font-semibold`}>Salvar Alterações</Text>
+            <Text style={[tw`text-white text-lg font-semibold text-center `, { fontFamily: 'poppins-regular' }]}>Salvar Alterações</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

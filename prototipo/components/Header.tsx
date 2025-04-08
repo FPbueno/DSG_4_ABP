@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import tw from "twrnc";
+import { useFonts } from "expo-font";
 
 // Definição dos tipos de navegação
 type DrawerParamList = {
@@ -14,7 +15,10 @@ type DrawerParamList = {
 
 const Header = () => {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
-
+  const [fontsLoaded] = useFonts({
+    'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+    'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+  });
   return (
     <View style={tw`flex-row items-center justify-between bg-[#071025] p-4`}>
       
@@ -24,7 +28,7 @@ const Header = () => {
       </TouchableOpacity>
 
       {/* Título Centralizado */}
-      <Text style={tw`text-white text-lg font-bold absolute left-1/2 -translate-x-1/2`}>
+      <Text style={[tw`text-white text-lg font-bold absolute left-1/2 -translate-x-1/2`,{fontFamily:'poppins-regular'}]}>
         AquaTrace
       </Text>
 
