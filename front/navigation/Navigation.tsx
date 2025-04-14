@@ -18,9 +18,9 @@ const Drawer = createDrawerNavigator();
 // Stack de autenticação
 const AuthStack = () => (
   <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Login" component={Login} />
-    <Stack.Screen name="Cadastro" component={Cadastro} />
-    <Stack.Screen name="Recuperacao" component={Recuperacao} />
+    <Stack.Screen name="/login" component={Login} />
+    <Stack.Screen name="/cadastro" component={Cadastro} />
+    <Stack.Screen name="/recuperacao" component={Recuperacao} />
   </Stack.Navigator>
 );
 
@@ -31,7 +31,7 @@ const MainStack = () => (
     drawerContent={(props) => <CustomDrawer {...props} />} // Menu lateral personalizado
     screenOptions={{ headerShown: false }}
   >
-    <Drawer.Screen  name="Home" component={HomeScreen} />
+    <Drawer.Screen  name="/home" component={HomeScreen} />
     <Drawer.Screen name="Map" component={OpenStreetMap} />
     <Drawer.Screen name="Settings" component={SettingsScreen} />
     <Drawer.Screen name="ConfiguraConta" component={ConfiguraConta} />
