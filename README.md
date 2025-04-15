@@ -24,10 +24,15 @@ dados transmitidos.
 /Front
 │
 ├── /src                   
-│   ├── /       
-│   ├── /            
-│   ├── /             
-│   └── /             
+│   ├── /assets       
+│   ├── /components            
+│   ├── /context
+│   ├── /hooks
+│   ├── /navigation
+│   ├── /screens
+│   ├── /services
+│   ├── /types               
+│   └── /utils             
 ├── package.json            # Dependências e scripts do projeto
 ├── .gitignore              # Arquivos a serem ignorados pelo git
 └── README.md 
