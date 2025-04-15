@@ -47,7 +47,7 @@ dados transmitidos.
 ## 📋 Entregas (arrumar os links)
 **Sprint**  | **Inicio / Fim** | **Status**         | **Link**
 :---------: | :------:    | :-------:          | :-------:
-01          | 24/03 - 15/04   | ⚠️                | <a href="#">Sprint 1</a>
+01          | 24/03 - 15/04   | ✅                | <a href="#">Sprint 1</a>
 02          | 16/04 - 13/05   | ⚠️                | <a href="#">Sprint 2</a>
 03          | 14/05 - 10/06   | ⚠️               | <a href="#">Sprint 3</a>
 
