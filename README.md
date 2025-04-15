@@ -51,6 +51,38 @@ dados transmitidos.
 ```
 ## ⚙️ Instalação
 
+Para instalarmos e rodarmos a aplicação devemos seguir os seguintes passos abaixo:
+```
+## Primeiro crie uma pasta onde você clonará o projeto e após abrir ela no terminal digite os seguintes comandos
+
+git clone https://github.com/FPbueno/DSG_4_ABP.git .
+
+npm i   ## Para instalar todas as dependências do projeto
+npx react-native install
+
+## Rodando no Backend
+npm run dev
+
+## Rodando o aplicativos móvel
+npx react-native run-android
+```
+
+## 📋 Backlog do Produto
+
+| Requisito | Descrição                                                                 | Sprint | Prioridade |
+|-----------|---------------------------------------------------------------------------|--------|------------|
+| RF01      | O sistema deve coletar e armazenar coordenadas GPS                        | 1      | Alta       |
+| RF02      | O sistema deve transmitir os dados coletados via rede celular             | 1      | Alta       |
+| RF03      | O sistema deve permitir que uma estação receba os dados e armazene no BD  | 2      | Alta       |
+| RF04      | O sistema deve restringir o acesso a usuários autenticados                | 2      | Alta       |
+| RF05      | O sistema deve permitir visualização do histórico por derivador e período | 3      | Alta       |
+| RF06      | O sistema deve permitir o download de dados em CSV                        | 2      | Média      |
+| RNF01     | O sistema deve permitir acesso aos dados por app móvel                    | 2      | Alta       |
+| RNF02     | O sistema deve apresentar localizações em mapas interativos               | 3      | Alta       |
+| RNF03     | A interface do sistema deve ser responsiva                                | 2      | Alta       |
+| RNF04     | O sistema deve incluir uma tela explicativa sobre o projeto               | 2      | Média      |
+
+
 ## 📋 Entregas 
 **Sprint**  | **Inicio / Fim** | **Status**         | **Link**
 :---------: | :------:    | :-------:          | :-------:
