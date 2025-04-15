@@ -19,7 +19,7 @@ desafio, portanto, é desenvolver uma solução própria baseada em IoT, que pos
 rastreamento dos derivadores e ofereça uma interface gráfica para visualização em tempo real dos
 dados transmitidos.
 
-## 📂 Estrutura do projeto: (preencher conforme o necessário)
+## 📂 Estrutura do projeto:
 ```
 /Front
 │
@@ -36,8 +36,10 @@ dados transmitidos.
 ├── /src                    
 │   ├── /controllers        
 │   ├── /models             
-│   ├── /database             
-│   └── /utils             
+│   ├── /database
+│   ├── /middleware
+│   ├── /routes             
+│   └── /service             
 ├── package.json            # Dependências e scripts do projeto
 ├── .gitignore              # Arquivos a serem ignorados pelo git
 └── README.md               
@@ -61,7 +63,7 @@ dados transmitidos.
   </thead>
   <tbody>
     <tr>
-      <td>Sem definição</td>
+      <td>Product Owner</td>
       <td>
         <a href="https://github.com/FPBueno">
           <img src="https://github.com/FPBueno.png" width="50" height="50" style="border-radius: 50%;" alt="FPBueno">
@@ -69,7 +71,7 @@ dados transmitidos.
       </td>
     </tr>
     <tr>
-      <td>Sem definição</td>
+      <td>Dev Team</td>
       <td>
         <a href="https://github.com/Marcelly-cris">
           <img src="https://github.com/Marcelly-cris.png" width="50" height="50" style="border-radius: 50%;" alt="Marcelly-cris">
@@ -77,7 +79,7 @@ dados transmitidos.
       </td>
     </tr>
     <tr>
-      <td>Sem definição</td>
+      <td>Dev Team</td>
       <td>
         <a href="https://github.com/MingRenan">
           <img src="https://github.com/MingRenan.png" width="50" height="50" style="border-radius: 50%;" alt="MingRenan">
@@ -85,7 +87,7 @@ dados transmitidos.
       </td>
     </tr>
     <tr>
-      <td>Sem definição</td>
+      <td>Scrum Master</td>
       <td>
         <a href="https://github.com/Isaac-Exon">
           <img src="https://github.com/Isaac-Exon.png" width="50" height="50" style="border-radius: 50%;" alt="Isaac-Exon">
@@ -93,7 +95,7 @@ dados transmitidos.
       </td>
     </tr>
     <tr>
-      <td>Sem definição</td>
+      <td>Dev team</td>
       <td>
         <a href="https://github.com/AnaBarbancho">
           <img src="https://github.com/AnaBarbancho.png" width="50" height="50" style="border-radius: 50%;" alt="AnaBarbancho">
