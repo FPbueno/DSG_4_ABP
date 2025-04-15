@@ -1,11 +1,21 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { saveToLocalStorage, removeFromLocalStorage } from '../utils/localStorage';
-import { UserContextProps, ProviderProps, ErrorProps, UserProps, TokenProps, ProfileProps } from '../types';
-import { Profile, User } from '../services';
-import { loadFromLocalStorage } from '../utils/localStorage';
-import { isErrorProps } from '../utils/isError';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, { createContext, useState, useEffect } from "react";
+import {
+  saveToLocalStorage,
+  removeFromLocalStorage,
+} from "../utils/localStorage";
+import {
+  UserContextProps,
+  ProviderProps,
+  ErrorProps,
+  UserProps,
+  TokenProps,
+  ProfileProps,
+} from "../types";
+import { Profile, User } from "../services";
+import { loadFromLocalStorage } from "../utils/localStorage";
+import { isErrorProps } from "../utils/isError";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 // Definindo as rotas possíveis
 type RootStackParamList = {
@@ -14,8 +24,9 @@ type RootStackParamList = {
   // Outras rotas que você tenha
 };
 
-
-export const UserContext = createContext<UserContextProps | undefined>(undefined);
+export const UserContext = createContext<UserContextProps | undefined>(
+  undefined
+);
 // Função do provider
 export function UserProvider({ children }: ProviderProps) {
   const [error, setError] = useState<ErrorProps | null>(null);
@@ -26,14 +37,14 @@ export function UserProvider({ children }: ProviderProps) {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
-    // Carregar propriedades se estiverem salvas no localStorage
-    const data = loadFromLocalStorage('user');
-    if (data) {
-      setToken(data);
+    const loadData = async () => {
+      const data = await loadFromLocalStorage("user");
+      if (data) {
+        setToken(data);
+      }
       setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    };
+    loadData();
     getProfile();
   }, []);
 
@@ -44,18 +55,17 @@ export function UserProvider({ children }: ProviderProps) {
     } else {
       setError(null);
       setToken(response);
-      saveToLocalStorage('user', response);
-      navigation.navigate('Home'); // Navegar para a tela inicial após o login
+      saveToLocalStorage("user", response);
+      navigation.navigate("Home"); // Navegar para a tela inicial após o login
     }
   };
 
   const create = async (
     name: string,
     mail: string,
-    fone:string,
-    pais:string,
-    password: string,
-
+    fone: string,
+    pais: string,
+    password: string
   ) => {
     const response = await User.create(name, mail, fone, pais, password);
     if (isErrorProps(response)) {
@@ -63,23 +73,23 @@ export function UserProvider({ children }: ProviderProps) {
     } else {
       setError(null);
       setToken(response);
-      saveToLocalStorage('user', response);
-      navigation.navigate('Home'); // Navegar para a tela inicial após a criação do usuário
+      saveToLocalStorage("user", response);
+      navigation.navigate("Home"); // Navegar para a tela inicial após a criação do usuário
     }
   };
 
   const logout = () => {
     setError(null);
     setToken(null);
-    removeFromLocalStorage('user');
-    navigation.navigate('Login'); // Navegar para a tela de login após o logout
+    removeFromLocalStorage("user");
+    navigation.navigate("Login"); // Navegar para a tela de login após o logout
   };
 
   const updateAlias = async (alias: string): Promise<boolean> => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
 
     if (!userId) {
-      setError({ error: 'User ID não encontrado.' });
+      setError({ error: "User ID não encontrado." });
       return false;
     }
 
@@ -90,9 +100,9 @@ export function UserProvider({ children }: ProviderProps) {
       return false;
     } else {
       setError(null);
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
       user.alias = alias;
-      saveToLocalStorage('user', user);
+      saveToLocalStorage("user", user);
       return true;
     }
   };
@@ -109,7 +119,7 @@ export function UserProvider({ children }: ProviderProps) {
         const temp = { ...token };
         temp.mail = mail;
         setToken(temp);
-        saveToLocalStorage('user', temp);
+        saveToLocalStorage("user", temp);
       }
       return true;
     }
@@ -126,8 +136,6 @@ export function UserProvider({ children }: ProviderProps) {
       return true;
     }
   };
-
-
 
   const getProfile = async (): Promise<void> => {
     const response = await Profile.list();
@@ -160,7 +168,6 @@ export function UserProvider({ children }: ProviderProps) {
       setUsers(response);
     }
   };
-
 
   return (
     <UserContext.Provider

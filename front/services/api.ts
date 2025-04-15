@@ -1,17 +1,19 @@
 import axios from "axios";
 import { loadFromLocalStorage } from "../utils/localStorage";
 
-export const api = axios.create({
-  baseURL: 'http://192.168.0.100:5000',
+const api = axios.create({
+  baseURL: "http://localhost:3000", // Para desenvolvimento local
+  // baseURL: "http://192.168.0.100:3000", // Para dispositivo físico (substitua pelo seu IP)
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 10000, // 10 segundos de timeout
 });
 
 // o interceptor de é chamado a cada requisição
 api.interceptors.request.use(
-  (config) => {
-    const user = loadFromLocalStorage("user");
+  async (config) => {
+    const user = await loadFromLocalStorage("user");
     if (user) {
       config.headers.Authorization = `Bearer ${user.token}`;
     }
@@ -31,7 +33,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       // Trata erros de resposta
-      const errorMessage = error.response.data?.error_message || error.response.data?.error || "Erro desconhecido no servidor";
+      const errorMessage =
+        error.response.data?.error_message ||
+        error.response.data?.error ||
+        "Erro desconhecido no servidor";
       return Promise.reject({ error: errorMessage });
     } else if (error.request) {
       if (error.code === "ECONNABORTED") {
@@ -48,3 +53,5 @@ api.interceptors.response.use(
     }
   }
 );
+
+export default api;

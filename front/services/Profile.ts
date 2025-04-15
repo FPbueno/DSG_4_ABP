@@ -1,5 +1,5 @@
 import { ErrorProps, ProfileProps } from "../types";
-import { api } from "./api";
+import api from "./api";
 
 class Profile {
   async list(): Promise<ProfileProps[] | ErrorProps> {
@@ -11,7 +11,11 @@ class Profile {
     }
   }
 
-  async save(birth_date:string, weight:string, sex:string): Promise<ProfileProps | ErrorProps> {
+  async save(
+    birth_date: string,
+    weight: string,
+    sex: string
+  ): Promise<ProfileProps | ErrorProps> {
     try {
       const { data } = await api.post("/profile", { birth_date, weight, sex });
       return data;
@@ -28,7 +32,6 @@ class Profile {
       return error;
     }
   }
-
 }
 
 const profile = new Profile();

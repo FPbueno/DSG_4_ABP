@@ -15,15 +15,23 @@ import {
 import tw from "twrnc";
 import { APIKEY } from "@env";
 
-
 const apiKey = APIKEY;
+
+interface WeatherData {
+  current: {
+    temp_c: number;
+    humidity: number;
+    wind_kph: number;
+    precip_mm: number;
+  };
+}
 
 const WeatherCard = () => {
   const [city, setCity] = useState("Jacareí");
   const [userInput, setUserInput] = useState("Jacareí");
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchWeatherData = async () => {
     if (!city.trim()) return;
@@ -53,7 +61,7 @@ const WeatherCard = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={tw`flex-1 bg-white`}
+      style={tw`flex-1 bg-[#071025]`}
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -64,8 +72,9 @@ const WeatherCard = () => {
           >
             <View style={tw`items-center p-4`}>
               <TextInput
-                style={tw`w-full p-3 mb-4 text-lg bg-white rounded-xl border-2 border-blue-800`}
+                style={tw`w-full p-3 mb-4 text-lg bg-gray-800 text-white rounded-xl border-2 border-blue-800`}
                 placeholder="Digite a cidade"
+                placeholderTextColor="#9CA3AF"
                 value={userInput}
                 onChangeText={setUserInput}
               />
@@ -86,9 +95,9 @@ const WeatherCard = () => {
                   style={tw`w-full flex- flex-wrap justify-center mb-4 mt-5`}
                 >
                   <View
-                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-600`}>
+                    <Text style={tw`text-sm font-semibold text-gray-300`}>
                       Temperatura
                     </Text>
                     <Text style={tw`text-xl font-bold text-blue-800`}>
@@ -97,9 +106,9 @@ const WeatherCard = () => {
                   </View>
 
                   <View
-                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-600`}>
+                    <Text style={tw`text-sm font-semibold text-gray-300`}>
                       Umidade
                     </Text>
                     <Text style={tw`text-lg font-bold text-blue-800`}>
@@ -108,9 +117,9 @@ const WeatherCard = () => {
                   </View>
 
                   <View
-                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-600`}>
+                    <Text style={tw`text-sm font-semibold text-gray-300`}>
                       Vento
                     </Text>
                     <Text style={tw`text-lg font-bold text-blue-800`}>
@@ -119,9 +128,9 @@ const WeatherCard = () => {
                   </View>
 
                   <View
-                    style={tw`w-full p-4 bg-white rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-600`}>
+                    <Text style={tw`text-sm font-semibold text-gray-300`}>
                       Precipitação
                     </Text>
                     <Text style={tw`text-lg font-bold text-blue-800`}>

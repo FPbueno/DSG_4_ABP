@@ -1,44 +1,102 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
-import tw from "twrnc";
-import { useFonts } from "expo-font";
+import { authService } from "../services/authService";
+import { Ionicons } from "@expo/vector-icons";
 
 // Definição dos tipos de navegação
 type DrawerParamList = {
+  OpenStreetMaps: undefined;
   Home: undefined;
-  Map: undefined;
   Settings: undefined;
 };
 
-const Header = () => {
-  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
-  const [fontsLoaded] = useFonts({
-    'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
-    'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
-  });
+interface HeaderProps {
+  navigation: DrawerNavigationProp<DrawerParamList>;
+}
+
+const Header: React.FC<HeaderProps> = ({ navigation }) => {
+  const handleLogout = async () => {
+    Alert.alert("Sair", "Tem certeza que deseja sair?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Sim",
+        onPress: async () => {
+          try {
+            await authService.logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          } catch (error) {
+            Alert.alert("Erro", "Não foi possível fazer logout.");
+          }
+        },
+      },
+    ]);
+  };
+
   return (
-    <View style={tw`flex-row items-center justify-between bg-[#071025] p-4`}>
-      
-      {/* Ícone do Menu Lateral à Esquerda */}
-      <TouchableOpacity onPress={() => navigation.openDrawer()}>
-        <Ionicons name="menu" size={32} color="white" />
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={styles.menuButton}
+        onPress={() => navigation.toggleDrawer()}
+      >
+        <Ionicons name="menu" size={24} color="#fff" />
       </TouchableOpacity>
 
-      {/* Título Centralizado */}
-      <Text style={[tw`text-white text-lg font-bold absolute left-1/2 -translate-x-1/2`,{fontFamily:'poppins-regular'}]}>
-        AquaTrace
-      </Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>AquaTrace</Text>
+      </View>
 
-      {/* Ícone de Foto à Direita */}
-      <TouchableOpacity style={tw`rounded-full border-2 border-white p-1`}>
-        <Ionicons name="person-circle-outline" size={40} color="white" />
-      </TouchableOpacity>
-
+      <View style={styles.rightContainer}>
+        <TouchableOpacity style={styles.profileButton}>
+          <Ionicons name="person-circle" size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Ionicons name="log-out" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#0A2463",
+    height: 60,
+    paddingHorizontal: 15,
+  },
+  menuButton: {
+    padding: 10,
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 20,
+    fontFamily: "poppins-bold",
+  },
+  rightContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileButton: {
+    padding: 10,
+    marginRight: 5,
+  },
+  logoutButton: {
+    padding: 10,
+  },
+});
 
 export default Header;

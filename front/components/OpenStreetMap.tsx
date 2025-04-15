@@ -8,8 +8,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import tw from "twrnc";
-import Footer from "./Footer";
-import Header from "./Header";
+
 const OpenStreetMap = () => {
   const [latitude, setLatitude] = useState<string>("-23.55052");
   const [longitude, setLongitude] = useState<string>("-46.633308");
@@ -47,19 +46,19 @@ const OpenStreetMap = () => {
   `;
 
   return (
-    <View style={tw`flex-1 bg-white`}>
-      <Header />
+    <View style={tw`flex-1 bg-[#071025]`}>
       <View style={tw`p-4 pt-8`}>
-        <Text style={tw`text-2xl font-bold text-center`}>
+        <Text style={tw`text-2xl font-bold text-center text-white`}>
           Insira Coordenadas
         </Text>
       </View>
 
       <View style={tw`mx-4 mt-6`}>
-        <Text style={tw`text-lg font-semibold`}>Latitude:</Text>
+        <Text style={tw`text-lg font-semibold text-white`}>Latitude:</Text>
         <TextInput
-          style={tw`border p-3 mt-2 rounded-lg text-lg`}
+          style={tw`border p-3 mt-2 rounded-lg text-lg bg-gray-800 text-white border-blue-800`}
           placeholder="Ex: -23.55052"
+          placeholderTextColor="#9CA3AF"
           value={latitude}
           onChangeText={handleLatitudeChange}
           keyboardType="default"
@@ -67,10 +66,11 @@ const OpenStreetMap = () => {
       </View>
 
       <View style={tw`mx-4 mt-4`}>
-        <Text style={tw`text-lg font-semibold`}>Longitude:</Text>
+        <Text style={tw`text-lg font-semibold text-white`}>Longitude:</Text>
         <TextInput
-          style={tw`border p-3 mt-2 rounded-lg text-lg`}
+          style={tw`border p-3 mt-2 rounded-lg text-lg bg-gray-800 text-white border-blue-800`}
           placeholder="Ex: -46.633308"
+          placeholderTextColor="#9CA3AF"
           value={longitude}
           onChangeText={handleLongitudeChange}
           keyboardType="default"
@@ -89,7 +89,6 @@ const OpenStreetMap = () => {
       </View>
 
       <WebView originWhitelist={["*"]} source={{ html }} style={tw`mt-4`} />
-    <Footer />
     </View>
   );
 };
