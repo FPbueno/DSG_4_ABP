@@ -13,6 +13,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import tw from "twrnc";
+import { Ionicons } from "@expo/vector-icons";
 import { APIKEY } from "@env";
 
 const apiKey = APIKEY;
@@ -91,50 +92,49 @@ const WeatherCard = () => {
               {error ? (
                 <Text style={tw`text-red-500`}>{error}</Text>
               ) : weatherData ? (
-                <View
-                  style={tw`w-full flex- flex-wrap justify-center mb-4 mt-5`}
-                >
+                <View style={tw`w-full flex-row justify-center gap-4`}>
                   <View
-                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-24 h-24 p-3 bg-gray-800 rounded-full shadow-lg items-center justify-center`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-300`}>
-                      Temperatura
-                    </Text>
-                    <Text style={tw`text-xl font-bold text-blue-800`}>
+                    <Ionicons
+                      name="thermometer"
+                      size={24}
+                      color="#4A90E2"
+                      style={tw`mb-1`}
+                    />
+                    <Text style={tw`text-xs text-gray-300`}>Temp</Text>
+                    <Text style={tw`text-lg font-bold text-blue-800`}>
                       {weatherData.current.temp_c}°C
                     </Text>
                   </View>
 
                   <View
-                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-24 h-24 p-3 bg-gray-800 rounded-full shadow-lg items-center justify-center`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-300`}>
-                      Umidade
-                    </Text>
+                    <Ionicons
+                      name="water"
+                      size={24}
+                      color="#4A90E2"
+                      style={tw`mb-1`}
+                    />
+                    <Text style={tw`text-xs text-gray-300`}>Umidade</Text>
                     <Text style={tw`text-lg font-bold text-blue-800`}>
                       {weatherData.current.humidity}%
                     </Text>
                   </View>
 
                   <View
-                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
+                    style={tw`w-24 h-24 p-3 bg-gray-800 rounded-full shadow-lg items-center justify-center`}
                   >
-                    <Text style={tw`text-sm font-semibold text-gray-300`}>
-                      Vento
-                    </Text>
+                    <Ionicons
+                      name="rainy"
+                      size={24}
+                      color="#4A90E2"
+                      style={tw`mb-1`}
+                    />
+                    <Text style={tw`text-xs text-gray-300`}>Chuva</Text>
                     <Text style={tw`text-lg font-bold text-blue-800`}>
-                      {weatherData.current.wind_kph} km/h
-                    </Text>
-                  </View>
-
-                  <View
-                    style={tw`w-full p-4 bg-gray-800 rounded-lg shadow-lg items-center mb-4`}
-                  >
-                    <Text style={tw`text-sm font-semibold text-gray-300`}>
-                      Precipitação
-                    </Text>
-                    <Text style={tw`text-lg font-bold text-blue-800`}>
-                      {weatherData.current.precip_mm} mm
+                      {weatherData.current.precip_mm}mm
                     </Text>
                   </View>
                 </View>

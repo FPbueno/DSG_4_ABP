@@ -8,13 +8,7 @@ dotenv.config();
 const app = express();
 
 // Configuração do CORS
-app.use(
-  cors({
-    origin: "*", // Permite todas as origens
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors());
 
 app.use(express.json());
 

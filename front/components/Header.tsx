@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
-import { authService } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 
 // Definição dos tipos de navegação
@@ -17,27 +17,18 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ navigation }) => {
+  const { logout } = useAuth();
+
   const handleLogout = async () => {
-    Alert.alert("Sair", "Tem certeza que deseja sair?", [
-      {
-        text: "Cancelar",
-        style: "cancel",
-      },
-      {
-        text: "Sim",
-        onPress: async () => {
-          try {
-            await authService.logout();
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" }],
-            });
-          } catch (error) {
-            Alert.alert("Erro", "Não foi possível fazer logout.");
-          }
-        },
-      },
-    ]);
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -71,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#0A2463",
-    height: 60,
+    height: 80,
     paddingHorizontal: 15,
   },
   menuButton: {
@@ -83,16 +74,17 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 24,
     fontFamily: "poppins-bold",
   },
   rightContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    width: 100,
   },
   profileButton: {
     padding: 10,
-    marginRight: 5,
   },
   logoutButton: {
     padding: 10,

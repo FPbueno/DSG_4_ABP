@@ -5,7 +5,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 
 type DrawerParamList = {
-  OpenStreetMaps: undefined;
+  Map: undefined;
   Home: undefined;
 };
 
@@ -16,7 +16,7 @@ const Footer = () => {
     <View style={styles.footer}>
       <TouchableOpacity
         style={styles.footerButton}
-        onPress={() => navigation.navigate("OpenStreetMaps")}
+        onPress={() => navigation.navigate("Map")}
       >
         <Ionicons name="map" size={24} color="#fff" />
         <Text style={styles.footerText}>Mapa</Text>

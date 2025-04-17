@@ -8,9 +8,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
-import OpenStreetMaps from "../screens/OpenStreetMaps";
 import Home from "../screens/Home";
 import Settings from "../screens/Settings";
+import OpenStreetMap from "../components/OpenStreetMap";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
@@ -23,8 +23,8 @@ const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 type DrawerParamList = {
-  OpenStreetMaps: undefined;
   Home: undefined;
+  Map: undefined;
   Settings: undefined;
 };
 
@@ -33,6 +33,20 @@ interface DrawerContentProps {
 }
 
 const DrawerContent = ({ navigation }: DrawerContentProps) => {
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
   return (
     <View style={styles.drawerContent}>
       <View style={styles.drawerHeader}>
@@ -40,10 +54,17 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
       </View>
       <View style={styles.drawerSection}>
         <DrawerItem
-          label="Home"
+          label="Início"
           onPress={() => navigation.navigate("Home")}
           icon={({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
+          )}
+        />
+        <DrawerItem
+          label="Mapa"
+          onPress={() => navigation.navigate("Map")}
+          icon={({ color, size }) => (
+            <MaterialCommunityIcons name="map" color={color} size={size} />
           )}
         />
         <DrawerItem
@@ -51,6 +72,13 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
           onPress={() => navigation.navigate("Settings")}
           icon={({ color, size }) => (
             <MaterialCommunityIcons name="cog" color={color} size={size} />
+          )}
+        />
+        <DrawerItem
+          label="Sair"
+          onPress={handleLogout}
+          icon={({ color, size }) => (
+            <MaterialCommunityIcons name="logout" color={color} size={size} />
           )}
         />
       </View>
@@ -61,23 +89,24 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
 const MainDrawer = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="OpenStreetMaps"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
+        drawerType: "front",
       }}
       drawerContent={(props) => <DrawerContent {...props} />}
     >
-      <Drawer.Screen name="OpenStreetMaps">
-        {(props) => (
-          <MainLayout {...props}>
-            <OpenStreetMaps />
-          </MainLayout>
-        )}
-      </Drawer.Screen>
       <Drawer.Screen name="Home">
         {(props) => (
           <MainLayout {...props}>
             <Home />
+          </MainLayout>
+        )}
+      </Drawer.Screen>
+      <Drawer.Screen name="Map">
+        {(props) => (
+          <MainLayout {...props}>
+            <OpenStreetMap />
           </MainLayout>
         )}
       </Drawer.Screen>

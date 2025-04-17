@@ -8,6 +8,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 type DrawerParamList = {
   OpenStreetMaps: undefined;
   Home: undefined;
+  Settings: undefined;
 };
 
 interface MainLayoutProps {

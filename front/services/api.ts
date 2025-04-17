@@ -2,8 +2,7 @@ import axios from "axios";
 import { loadFromLocalStorage } from "../utils/localStorage";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000", // Para desenvolvimento local
-  // baseURL: "http://192.168.0.100:3000", // Para dispositivo físico (substitua pelo seu IP)
+  baseURL: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json",
   },
