@@ -237,6 +237,41 @@ class UserController {
       res.json({ erro: "Perfil inexistente" });
     }
   }
+
+  public async recoverPassword(req: Request, res: Response): Promise<void> {
+    const { email } = req.body;
+
+    try {
+      if (!email) {
+        res.status(400).json({ erro: "Forneça o e-mail" });
+        return;
+      }
+
+      // Verifica se o email existe
+      const user: any = await query(
+        "SELECT id, email FROM users WHERE email = $1",
+        [email]
+      );
+
+      if (!user || user.length === 0) {
+        res.status(404).json({ erro: "Email não encontrado" });
+        return;
+      }
+
+      // Aqui você implementaria a lógica de envio de email
+      // Por enquanto, vamos apenas simular o envio
+      console.log(`Email de recuperação enviado para ${email}`);
+
+      res.json({
+        mensagem: "Email de recuperação enviado com sucesso",
+      });
+    } catch (error: any) {
+      console.error("Erro ao recuperar senha:", error);
+      res
+        .status(500)
+        .json({ erro: "Erro ao processar solicitação de recuperação" });
+    }
+  }
 }
 
 export default new UserController();

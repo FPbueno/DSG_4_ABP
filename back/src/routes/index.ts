@@ -10,6 +10,7 @@ routes.post("/cadastro", UserController.create);
 routes.post("/login", UserController.login);
 routes.get("/users", UserController.list);
 routes.get("/check-email/:email", UserController.checkEmail);
+routes.post("/recover-password", UserController.recoverPassword);
 routes.use("/user", userRoute);
 
 // Rotas de localização
