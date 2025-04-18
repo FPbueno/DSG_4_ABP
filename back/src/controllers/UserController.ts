@@ -95,6 +95,21 @@ class UserController {
         return;
       }
 
+      // Primeiro, verifica se o email já existe
+      const existingUser: any = await query(
+        "SELECT id, nome, email FROM users WHERE email = $1",
+        [email]
+      );
+
+      if (existingUser && existingUser.length > 0) {
+        console.log("Usuário já existe:", existingUser[0]);
+        res.status(400).json({
+          erro: `O e-mail ${email} já está cadastrado`,
+          usuarioExistente: existingUser[0],
+        });
+        return;
+      }
+
       console.log("Tentando criar usuário no banco de dados");
       const hashedPassword = await bcrypt.hash(senha, 10);
 
@@ -103,30 +118,55 @@ class UserController {
         [nome, email, telefone, pais, hashedPassword]
       );
 
-      if (response && response.rows && response.rows[0]) {
-        console.log("Usuário criado com sucesso:", response.rows[0]);
-        res.status(201).json(response.rows[0]);
+      console.log("Resposta do banco de dados:", response);
+
+      if (response && response.id) {
+        console.log("Usuário criado com sucesso:", response);
+        res.status(201).json(response);
       } else {
-        console.log("Erro ao criar usuário: resposta vazia");
+        console.log("Erro ao criar usuário: resposta inválida");
         res.status(500).json({ erro: "Erro ao cadastrar usuário" });
       }
     } catch (error: any) {
       console.error("Erro ao criar usuário:", error);
-      if (error.message && error.message.includes("duplicate key")) {
-        res
-          .status(400)
-          .json({ erro: `O e-mail ${email} já existe no cadastro` });
-      } else {
-        res.status(500).json({ erro: "Erro ao cadastrar usuário" });
-      }
+      res.status(500).json({ erro: "Erro ao cadastrar usuário" });
     }
   }
 
-  public async list(_: Request, res: Response): Promise<void> {
-    const response: any = await query(
-      "SELECT id,mail,profile FROM users ORDER BY mail"
-    );
-    res.json(response);
+  public async list(req: Request, res: Response): Promise<void> {
+    try {
+      console.log("Listando usuários...");
+      const response: any = await query(
+        "SELECT id, email, nome, telefone, pais FROM users"
+      );
+
+      console.log("Usuários encontrados:", response);
+      res.json(response);
+    } catch (error: any) {
+      console.error("Erro ao listar usuários:", error);
+      res.status(500).json({ erro: "Erro ao listar usuários" });
+    }
+  }
+
+  public async checkEmail(req: Request, res: Response): Promise<void> {
+    const { email } = req.params;
+    try {
+      console.log("Verificando email:", email);
+      const response: any = await query(
+        "SELECT id, email FROM users WHERE email = $1",
+        [email]
+      );
+
+      console.log("Resultado da verificação:", response);
+      if (response && response.length > 0) {
+        res.json({ exists: true, user: response[0] });
+      } else {
+        res.json({ exists: false });
+      }
+    } catch (error: any) {
+      console.error("Erro ao verificar email:", error);
+      res.status(500).json({ erro: "Erro ao verificar email" });
+    }
   }
 
   public async delete(req: Request, res: Response): Promise<void> {

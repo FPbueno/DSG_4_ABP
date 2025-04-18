@@ -51,6 +51,15 @@ export default function Register({ navigation }: Props) {
     setErro("");
 
     try {
+      console.log("Iniciando processo de cadastro...");
+      console.log("Dados sendo enviados:", {
+        nome,
+        email,
+        telefone,
+        pais,
+        senha,
+      });
+
       const response = await api.post("/cadastro", {
         nome: nome,
         email: email,
@@ -59,13 +68,17 @@ export default function Register({ navigation }: Props) {
         senha: senha,
       });
 
+      console.log("Resposta do servidor:", response.data);
+
       if (response.data.id) {
+        console.log("Usuário criado com sucesso, navegando para Login...");
         navigation.navigate("Login");
       } else {
+        console.log("Erro na resposta do servidor:", response.data);
         setErro(response.data.erro || "Erro ao criar conta. Tente novamente.");
       }
     } catch (error: any) {
-      console.error("Registration error:", error);
+      console.error("Erro detalhado no cadastro:", error);
       setErro(
         error.response?.data?.erro || "Erro ao criar conta. Tente novamente."
       );
