@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { query } from "../database/connection";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendRecoveryEmail } from "../services/emailService";
 
 class UserController {
   public async login(req: Request, res: Response): Promise<void> {
@@ -254,22 +255,121 @@ class UserController {
       );
 
       if (!user || user.length === 0) {
-        res.status(404).json({ erro: "Email não encontrado" });
+        res.status(404).json({ erro: "E-mail não encontrado" });
         return;
       }
 
-      // Aqui você implementaria a lógica de envio de email
-      // Por enquanto, vamos apenas simular o envio
-      console.log(`Email de recuperação enviado para ${email}`);
+      // Gera um código de 6 dígitos
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Armazena o código no banco de dados com timestamp
+      await query(
+        "UPDATE users SET code = $1, code_expires = NOW() + INTERVAL '10 minutes' WHERE id = $2",
+        [code, user[0].id]
+      );
+
+      // Envia o email com o código
+      await sendRecoveryEmail(email, code);
 
       res.json({
-        mensagem: "Email de recuperação enviado com sucesso",
+        mensagem: "Código de verificação enviado para o seu e-mail",
+        email: email, // Enviamos o email de volta para o frontend
       });
-    } catch (error: any) {
-      console.error("Erro ao recuperar senha:", error);
-      res
-        .status(500)
-        .json({ erro: "Erro ao processar solicitação de recuperação" });
+    } catch (error) {
+      console.error("Erro ao processar recuperação de senha:", error);
+      res.status(500).json({ erro: "Erro ao processar recuperação de senha" });
+    }
+  }
+
+  public async verifyCode(req: Request, res: Response): Promise<void> {
+    const { email, code } = req.body;
+
+    console.log("Verificando código:", { email, code });
+
+    try {
+      if (!email || !code) {
+        console.log("Email ou código não fornecidos");
+        res.status(400).json({ erro: "Forneça o e-mail e o código" });
+        return;
+      }
+
+      // Verifica se o usuário existe
+      const userExists: any = await query(
+        "SELECT id FROM users WHERE email = $1",
+        [email]
+      );
+
+      if (!userExists || userExists.length === 0) {
+        console.log("Usuário não encontrado");
+        res.status(404).json({ erro: "Usuário não encontrado" });
+        return;
+      }
+
+      // Verifica o código
+      console.log("Verificando código no banco de dados...");
+      const user: any = await query(
+        "SELECT id FROM users WHERE email = $1 AND code = $2 AND code_expires > NOW()",
+        [email, code]
+      );
+
+      console.log("Resultado da verificação:", user);
+
+      if (!user || user.length === 0) {
+        console.log("Código inválido ou expirado");
+        res.status(400).json({ erro: "Código inválido ou expirado" });
+        return;
+      }
+
+      // Gera um token temporário para redefinição de senha
+      console.log("Gerando token...");
+      const token = jwt.sign(
+        { id: user[0].id, email: email },
+        process.env.JWT_SECRET || "your-secret-key",
+        { expiresIn: "10m" }
+      );
+
+      console.log("Código verificado com sucesso");
+      res.json({
+        mensagem: "Código verificado com sucesso",
+        token: token,
+      });
+    } catch (error) {
+      console.error("Erro ao verificar código:", error);
+      res.status(500).json({
+        erro: "Erro ao verificar código",
+        detalhes: error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    }
+  }
+
+  public async resetPassword(req: Request, res: Response): Promise<void> {
+    const { token, newPassword } = req.body;
+
+    try {
+      if (!token || !newPassword) {
+        res.status(400).json({ erro: "Forneça o token e a nova senha" });
+        return;
+      }
+
+      // Verifica o token
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "your-secret-key"
+      ) as { id: string };
+
+      // Atualiza a senha
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await query(
+        "UPDATE users SET senha = $1, code = NULL, code_expires = NULL WHERE id = $2",
+        [hashedPassword, decoded.id]
+      );
+
+      res.json({
+        mensagem: "Senha redefinida com sucesso",
+      });
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error);
+      res.status(500).json({ erro: "Erro ao redefinir senha" });
     }
   }
 }

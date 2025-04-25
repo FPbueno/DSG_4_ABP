@@ -52,6 +52,42 @@ Este é o backend da aplicação AquaTrace, desenvolvido em Node.js com TypeScri
    JWT_SECRET=sua_chave_secreta_jwt
    ```
 
+### Recriando a Tabela de Usuários
+
+Se precisar recriar a tabela de usuários (por exemplo, após alterações na estrutura), siga estes passos:
+
+1. Pare o servidor backend se estiver rodando
+
+2. Execute o script de recriação da tabela:
+
+```bash
+npx ts-node src/database/scripts/recreateUsersTable.ts
+```
+
+3. Reinicie o servidor:
+
+```bash
+npm run dev
+```
+
+A tabela será recriada com a seguinte estrutura:
+
+- `id`: Identificador único do usuário
+- `nome`: Nome completo do usuário
+- `email`: Email do usuário (único)
+- `telefone`: Número de telefone do usuário
+- `pais`: País do usuário
+- `senha`: Senha criptografada do usuário
+- `code`: Código de verificação para recuperação de senha
+- `code_expires`: Data de expiração do código de verificação
+- `created_at`: Data de criação do registro
+- `updated_at`: Data da última atualização do registro
+
+Após recriar a tabela, você precisará:
+
+1. Cadastrar um novo usuário
+2. Testar o fluxo de recuperação de senha
+
 ## Executando o Servidor
 
 1. Inicie o servidor em modo de desenvolvimento:

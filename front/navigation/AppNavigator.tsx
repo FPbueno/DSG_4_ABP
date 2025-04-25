@@ -8,6 +8,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
+import Recuperacao from "../screens/Recuperacao";
+import ResetPassword from "../screens/ResetPassword";
 import Home from "../screens/Home";
 import Settings from "../screens/Settings";
 import OpenStreetMap from "../components/OpenStreetMap";
@@ -172,6 +174,8 @@ export const AppNavigator = () => {
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Recuperacao" component={Recuperacao} />
+            <Stack.Screen name="ResetPassword" component={ResetPassword} />
           </>
         ) : (
           <Stack.Screen name="MainDrawer" component={MainDrawer} />

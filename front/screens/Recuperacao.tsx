@@ -10,14 +10,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import tw from "twrnc"; // Para estilização com Tailwind CSS no React Native
+import { authService } from "../services/authService";
 
 type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Recuperacao: undefined;
   MainStack: undefined;
+  ResetPassword: { email: string };
 };
 
 type RecuperacaoScreenNavigationProp = StackNavigationProp<
@@ -32,6 +35,7 @@ interface Props {
 const Recuperacao: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
@@ -45,17 +49,24 @@ const Recuperacao: React.FC<Props> = ({ navigation }) => {
     }
 
     setLoading(true);
+    setSuccess(false);
 
-    // Aqui você faria uma requisição para a API para recuperar a senha.
-    // Exemplo de simulação de envio de e-mail.
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await authService.forgotPassword(email);
+      setSuccess(true);
+
+      // Redireciona automaticamente para a tela de ResetPassword
+      navigation.navigate("ResetPassword", { email });
+    } catch (error) {
       Alert.alert(
-        "Sucesso",
-        "Instruções para recuperação de senha foram enviadas para o seu e-mail."
+        "Erro",
+        error instanceof Error
+          ? error.message
+          : "Erro ao solicitar recuperação de senha"
       );
-      setEmail(""); // Limpa o campo de email após envio
-    }, 2000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,20 +102,24 @@ const Recuperacao: React.FC<Props> = ({ navigation }) => {
               { fontFamily: "Poppins-Regular" },
             ]}
             placeholder="Seu Email"
+            placeholderTextColor="#999"
             keyboardType="email-address"
+            autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
+            editable={!loading}
           />
 
           <TouchableOpacity
-            style={tw`w-full py-3 mb-4 bg-[#D2042D] rounded-lg items-center `}
+            style={[
+              tw`w-full py-3 mb-4 rounded-lg items-center`,
+              loading ? tw`bg-gray-500` : tw`bg-[#D2042D]`,
+            ]}
             onPress={handleRecuperarSenha}
             disabled={loading}
           >
             {loading ? (
-              <Text style={tw`text-white text-lg font-poppins`}>
-                Enviando...
-              </Text>
+              <ActivityIndicator color="#fff" />
             ) : (
               <Text
                 style={[
@@ -118,13 +133,11 @@ const Recuperacao: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
 
           <View style={tw`flex-row justify-center`}>
-            <Text style={tw`text-sm font-poppins text-gray-500`}>
+            <Text style={tw`text-sm text-gray-500`}>
               Lembrou da sua senha?{" "}
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Text style={tw`text-sm font-poppins text-blue-600`}>
-                Voltar para Login
-              </Text>
+              <Text style={tw`text-sm text-blue-600`}>Voltar para Login</Text>
             </TouchableOpacity>
           </View>
         </View>

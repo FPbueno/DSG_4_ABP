@@ -66,4 +66,56 @@ export const authService = {
       throw new Error("Erro ao fazer logout");
     }
   },
+
+  async forgotPassword(email: string): Promise<any> {
+    try {
+      const response = await axios.post(`${API_URL}/user/recuperar-senha`, {
+        email: email,
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(
+          error.response.data.error || "Erro ao solicitar recuperação de senha"
+        );
+      }
+      throw new Error("Erro ao solicitar recuperação de senha");
+    }
+  },
+
+  async verifyCode(email: string, code: string): Promise<any> {
+    try {
+      const response = await axios.post(`${API_URL}/user/verificar-codigo`, {
+        email: email,
+        code: code,
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(
+          error.response.data.error || "Erro ao verificar código"
+        );
+      }
+      throw new Error("Erro ao verificar código");
+    }
+  },
+
+  async resetPassword(
+    email: string,
+    newPassword: string,
+    token: string
+  ): Promise<any> {
+    try {
+      const response = await axios.post(`${API_URL}/user/redefinir-senha`, {
+        token: token,
+        newPassword: newPassword,
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.error || "Erro ao redefinir senha");
+      }
+      throw new Error("Erro ao redefinir senha");
+    }
+  },
 };

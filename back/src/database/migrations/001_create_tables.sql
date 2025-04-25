@@ -1,4 +1,7 @@
--- Criação da tabela users
+-- Migration: Create initial tables
+-- Description: Creates the users and locations tables with their respective indexes
+
+-- Create users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -12,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Criação da tabela locations
+-- Create locations table
 CREATE TABLE IF NOT EXISTS locations (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS locations (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Índices para melhor performance
+-- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_locations_user_id ON locations(user_id);
 CREATE INDEX IF NOT EXISTS idx_locations_coordinates ON locations(latitude, longitude); 
