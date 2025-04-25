@@ -50,43 +50,25 @@ export default function Login({ navigation }: Props) {
 
     try {
       console.log("Iniciando processo de login...");
-      const response = await api.post("/login", {
-        email: email,
-        password: senha,
-      });
-
+      const response = await api.post("/user/login", { email, senha });
       console.log("Resposta do servidor:", response.data);
 
       if (response.data.token) {
         console.log("Token recebido, salvando dados do usuário...");
-        const userData = {
-          token: response.data.token,
-          id: response.data.id,
-          email: response.data.email,
-          nome: response.data.nome,
-          telefone: response.data.telefone,
-          pais: response.data.pais,
-        };
-
-        await saveToLocalStorage("user", userData);
-        await login(response.data.token, response.data.id);
-
+        await login(response.data.token, response.data.id.toString());
         console.log("Dados do usuário salvos, navegando para MainDrawer...");
+
+        // Usar navigation.reset para limpar a pilha de navegação
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
             routes: [{ name: "MainDrawer" }],
           })
         );
-      } else {
-        console.log("Token não recebido na resposta");
-        setErro("Erro ao fazer login. Tente novamente.");
       }
     } catch (error: any) {
-      console.error("Erro detalhado no login:", error);
-      setErro(
-        error.response?.data?.erro || "Erro ao fazer login. Tente novamente."
-      );
+      console.error("Erro durante o login:", error);
+      setErro(error.response?.data?.error || "Erro ao fazer login");
     } finally {
       setLoading(false);
     }

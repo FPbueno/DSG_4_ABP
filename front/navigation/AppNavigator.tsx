@@ -12,7 +12,7 @@ import Recuperacao from "../screens/Recuperacao";
 import ResetPassword from "../screens/ResetPassword";
 import Home from "../screens/Home";
 import Settings from "../screens/Settings";
-import OpenStreetMap from "../components/OpenStreetMap";
+import MapScreen from "../screens/Map";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
@@ -108,7 +108,7 @@ const MainDrawer = () => {
       <Drawer.Screen name="Map">
         {(props) => (
           <MainLayout {...props}>
-            <OpenStreetMap />
+            <MapScreen />
           </MainLayout>
         )}
       </Drawer.Screen>
