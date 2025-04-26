@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 type DrawerParamList = {
   Map: undefined;
   Home: undefined;
+  Statistics: undefined;
 };
 
 const Footer = () => {
@@ -27,6 +28,13 @@ const Footer = () => {
       >
         <Ionicons name="home" size={24} color="#fff" />
         <Text style={styles.footerText}>Home</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.footerButton}
+        onPress={() => navigation.navigate("Statistics")}
+      >
+        <Ionicons name="stats-chart" size={24} color="#fff" />
+        <Text style={styles.footerText}>Estatísticas</Text>
       </TouchableOpacity>
     </View>
   );

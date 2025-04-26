@@ -13,6 +13,7 @@ import ResetPassword from "../screens/ResetPassword";
 import Home from "../screens/Home";
 import Settings from "../screens/Settings";
 import MapScreen from "../screens/Map";
+import Statistics from "../screens/Statistics";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
@@ -28,6 +29,7 @@ type DrawerParamList = {
   Home: undefined;
   Map: undefined;
   Settings: undefined;
+  Statistics: undefined;
 };
 
 interface DrawerContentProps {
@@ -77,6 +79,17 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
           )}
         />
         <DrawerItem
+          label="Estatísticas"
+          onPress={() => navigation.navigate("Statistics")}
+          icon={({ color, size }) => (
+            <MaterialCommunityIcons
+              name="chart-bar"
+              color={color}
+              size={size}
+            />
+          )}
+        />
+        <DrawerItem
           label="Sair"
           onPress={handleLogout}
           icon={({ color, size }) => (
@@ -116,6 +129,13 @@ const MainDrawer = () => {
         {(props) => (
           <MainLayout {...props}>
             <Settings />
+          </MainLayout>
+        )}
+      </Drawer.Screen>
+      <Drawer.Screen name="Statistics">
+        {(props) => (
+          <MainLayout {...props}>
+            <Statistics />
           </MainLayout>
         )}
       </Drawer.Screen>
