@@ -1,21 +1,31 @@
-import React, { useState, useRef } from "react";
-import {
-  View,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  Animated,
-} from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { View, Text, TouchableOpacity, Animated } from "react-native";
 import { WebView } from "react-native-webview";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
+import api from "../services/api";
 
 const OpenStreetMap = () => {
   const [latitude, setLatitude] = useState<string>("-23.55052");
   const [longitude, setLongitude] = useState<string>("-46.633308");
+  const [speed, setSpeed] = useState<string>("0");
   const [selectedLayer, setSelectedLayer] = useState<string>("osm");
   const webViewRef = useRef<WebView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const fetchLastLocation = async () => {
+    try {
+      const response = await api.get("/locations/last");
+      if (response.data) {
+        setLatitude(response.data.latitude.toString());
+        setLongitude(response.data.longitude.toString());
+        setSpeed(response.data.speed.toString());
+        updateMap();
+      }
+    } catch (error) {
+      console.error("Erro ao buscar última localização:", error);
+    }
+  };
 
   React.useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -23,19 +33,10 @@ const OpenStreetMap = () => {
       duration: 1000,
       useNativeDriver: true,
     }).start();
+
+    // Buscar última localização quando o componente montar
+    fetchLastLocation();
   }, []);
-
-  const handleLatitudeChange = (value: string) => {
-    if (/^-?\d*\.?\d*$/.test(value)) {
-      setLatitude(value);
-    }
-  };
-
-  const handleLongitudeChange = (value: string) => {
-    if (/^-?\d*\.?\d*$/.test(value)) {
-      setLongitude(value);
-    }
-  };
 
   const updateMap = () => {
     if (webViewRef.current) {
@@ -134,26 +135,6 @@ const OpenStreetMap = () => {
               iconAnchor: [10, 10]
             })
           }).addTo(map);
-          
-          map.on('click', function(e) {
-            if (marker) {
-              marker.setLatLng(e.latlng);
-            } else {
-              marker = L.marker(e.latlng, {
-                icon: L.divIcon({
-                  className: 'custom-marker',
-                  html: '<div style="width: 20px; height: 20px; background-color: #3b82f6; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4);"></div>',
-                  iconSize: [20, 20],
-                  iconAnchor: [10, 10]
-                })
-              }).addTo(map);
-            }
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              type: 'click',
-              lat: e.latlng.lat,
-              lng: e.latlng.lng
-            }));
-          });
         </script>
       </body>
     </html>
@@ -161,39 +142,17 @@ const OpenStreetMap = () => {
 
   return (
     <Animated.View style={[tw`flex-1 bg-[#071025]`, { opacity: fadeAnim }]}>
-      <View style={tw`mx-4 mt-6 flex-row justify-between`}>
-        <View style={tw`flex-1 mr-2`}>
-          <View style={tw`flex-row items-center mb-2`}>
-            <Ionicons name="location" size={20} color="#3b82f6" />
-            <Text style={tw`text-lg font-semibold text-white ml-2`}>
-              Latitude:
-            </Text>
-          </View>
-          <TextInput
-            style={tw`border p-3 rounded-xl text-lg bg-gray-800 text-white border-blue-800 shadow-lg`}
-            placeholder="Ex: -23.55052"
-            placeholderTextColor="#9CA3AF"
-            value={latitude}
-            onChangeText={handleLatitudeChange}
-            keyboardType="numeric"
-          />
+      <View style={tw`mt-4 mx-4`}>
+        <View style={tw`flex-row items-center mb-2`}>
+          <Ionicons name="speedometer" size={20} color="#3b82f6" />
+          <Text style={tw`text-lg font-semibold text-white ml-2`}>
+            Velocidade:
+          </Text>
         </View>
-
-        <View style={tw`flex-1 ml-2`}>
-          <View style={tw`flex-row items-center mb-2`}>
-            <Ionicons name="location" size={20} color="#3b82f6" />
-            <Text style={tw`text-lg font-semibold text-white ml-2`}>
-              Longitude:
-            </Text>
-          </View>
-          <TextInput
-            style={tw`border p-3 rounded-xl text-lg bg-gray-800 text-white border-blue-800 shadow-lg`}
-            placeholder="Ex: -46.633308"
-            placeholderTextColor="#9CA3AF"
-            value={longitude}
-            onChangeText={handleLongitudeChange}
-            keyboardType="numeric"
-          />
+        <View
+          style={tw`border p-3 rounded-xl text-lg bg-gray-800 text-white border-blue-800 shadow-lg`}
+        >
+          <Text style={tw`text-white text-lg`}>{speed} km/h</Text>
         </View>
       </View>
 
@@ -216,11 +175,12 @@ const OpenStreetMap = () => {
           source={{ html }}
           style={tw`flex-1`}
           onMessage={(event) => {
-            const data = JSON.parse(event.nativeEvent.data);
-            if (data.type === "click") {
-              setLatitude(data.lat.toString());
-              setLongitude(data.lng.toString());
-            }
+            // Remove message handling for click events
+            // const data = JSON.parse(event.nativeEvent.data);
+            // if (data.type === "click") {
+            //   setLatitude(data.lat.toString());
+            //   setLongitude(data.lng.toString());
+            // }
           }}
         />
       </View>

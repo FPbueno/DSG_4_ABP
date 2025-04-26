@@ -16,6 +16,7 @@ routes.use("/user", userRoute);
 // Rotas de localização
 routes.post("/locations", LocationController.create);
 routes.get("/locations", LocationController.list);
+routes.get("/locations/last", LocationController.getLastLocation);
 
 routes.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "API funcionando corretamente!" });

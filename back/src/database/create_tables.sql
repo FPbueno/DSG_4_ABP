@@ -13,16 +13,13 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Criação da tabela locations
-CREATE TABLE IF NOT EXISTS locations (
+CREATE TABLE locations (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
     latitude DECIMAL(10, 8) NOT NULL,
     longitude DECIMAL(11, 8) NOT NULL,
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
+    speed DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Índices para melhor performance

@@ -3,28 +3,47 @@ import { query } from "../database/connection";
 
 class LocationController {
   public async create(req: Request, res: Response): Promise<void> {
-    const { latitude, longitude } = req.body;
+    const { latitude, longitude, speed } = req.body;
 
-    if (latitude === undefined || longitude === undefined) {
-      res.status(400).json({ erro: "Forneça latitude e longitude" });
+    if (
+      latitude === undefined ||
+      longitude === undefined ||
+      speed === undefined
+    ) {
+      res
+        .status(400)
+        .json({ erro: "Forneça latitude, longitude e velocidade" });
       return;
     }
 
     try {
       const response: any = await query(
-        "INSERT INTO locations(latitude, longitude) VALUES ($1, $2) RETURNING id, latitude, longitude",
-        [latitude, longitude]
+        "INSERT INTO locations(latitude, longitude, speed) VALUES ($1, $2, $3) RETURNING id, latitude, longitude, speed",
+        [latitude, longitude, speed]
       );
 
-      if (!response || !response.id) {
+      console.log("Raw database response:", response);
+
+      if (!response) {
         res
           .status(500)
-          .json({ erro: "Formato inesperado de resposta do banco de dados" });
+          .json({ erro: "Nenhuma resposta recebida do banco de dados" });
         return;
       }
 
-      console.log("Response from database:", response);
-      res.status(201).json(response);
+      if (typeof response === "object" && response.message) {
+        res
+          .status(500)
+          .json({ erro: `Erro no banco de dados: ${response.message}` });
+        return;
+      }
+
+      res.status(200).json({
+        id: response.id,
+        latitude: response.latitude,
+        longitude: response.longitude,
+        speed: response.speed,
+      });
     } catch (error: any) {
       console.error("Database error:", error);
       res.status(500).json({ erro: error.message });
@@ -44,9 +63,9 @@ class LocationController {
       // Validação dos parâmetros
       const validSortColumns = [
         "id",
-        "nome",
         "latitude",
         "longitude",
+        "speed",
         "created_at",
       ];
       const sortColumn = validSortColumns.includes(sortBy as string)
@@ -59,7 +78,7 @@ class LocationController {
 
       // Construção da query base
       let baseQuery = `
-        SELECT id, user_id, latitude, longitude, nome, descricao, created_at, updated_at 
+        SELECT id, latitude, longitude, speed 
         FROM locations 
         WHERE 1=1
       `;
@@ -68,8 +87,8 @@ class LocationController {
       // Adiciona busca se houver
       if (search) {
         baseQuery += ` AND (
-          nome ILIKE $${queryParams.length + 1} OR 
-          descricao ILIKE $${queryParams.length + 1}
+          CAST(latitude AS TEXT) ILIKE $${queryParams.length + 1} OR 
+          CAST(longitude AS TEXT) ILIKE $${queryParams.length + 1}
         )`;
         queryParams.push(`%${search}%`);
       }
@@ -84,38 +103,81 @@ class LocationController {
       queryParams.push(pageSize, offset);
 
       // Query para contar total de registros
-      const countQuery = `
+      let countQuery = `
         SELECT COUNT(*) as total 
         FROM locations 
         WHERE 1=1
-        ${search ? `AND (nome ILIKE $1 OR descricao ILIKE $1)` : ""}
       `;
+      const countParams: any[] = [];
+
+      if (search) {
+        countQuery += ` AND (
+          CAST(latitude AS TEXT) ILIKE $${countParams.length + 1} OR 
+          CAST(longitude AS TEXT) ILIKE $${countParams.length + 1}
+        )`;
+        countParams.push(`%${search}%`);
+      }
 
       const [response, countResult] = await Promise.all([
         query(baseQuery, queryParams),
-        query(countQuery, search ? [`%${search}%`] : []),
+        query(countQuery, countParams),
       ]);
 
-      if (
-        !response ||
-        !Array.isArray(response) ||
-        !countResult ||
-        !Array.isArray(countResult)
-      ) {
+      // Verifica se a resposta é um array
+      if (!Array.isArray(response)) {
+        console.error("Resposta do banco de dados não é um array:", response);
         res
           .status(500)
           .json({ erro: "Formato inesperado de resposta do banco de dados" });
         return;
       }
 
+      // Verifica se countResult é válido
+      if (!Array.isArray(countResult) || countResult.length === 0) {
+        console.error("Resultado da contagem inválido:", countResult);
+        res.status(500).json({ erro: "Erro ao contar registros" });
+        return;
+      }
+
+      const total = parseInt(countResult[0].total);
+
       res.status(200).json({
-        data: response,
+        data: response.map((location) => ({
+          id: location.id,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          speed: location.speed,
+        })),
         pagination: {
-          total: parseInt(countResult[0].total),
+          total: total,
           page: pageNumber,
           limit: pageSize,
-          totalPages: Math.ceil(parseInt(countResult[0].total) / pageSize),
+          totalPages: Math.ceil(total / pageSize),
         },
+      });
+    } catch (error: any) {
+      console.error("Database error:", error);
+      res.status(500).json({ erro: error.message });
+    }
+  }
+
+  public async getLastLocation(req: Request, res: Response): Promise<void> {
+    try {
+      const response = await query(
+        "SELECT id, latitude, longitude, speed FROM locations ORDER BY created_at DESC LIMIT 1"
+      );
+
+      if (!Array.isArray(response) || response.length === 0) {
+        res.status(404).json({ erro: "Nenhuma localização encontrada" });
+        return;
+      }
+
+      const location = response[0];
+      res.status(200).json({
+        id: location.id,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        speed: location.speed,
       });
     } catch (error: any) {
       console.error("Database error:", error);

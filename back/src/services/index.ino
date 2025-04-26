@@ -3,8 +3,8 @@
 #include <TinyGPS++.h>
 
 // === CONFIG Wi-Fi ===
-char ssid[] = "rede do wifi";
-char pass[] = "senha do wifi";
+char ssid[] = "isaac celular";
+char pass[] = "iscxxxx";
 
 // === GPS ===
 SoftwareSerial gpsSerial(8, 9);  // RX (GPS TX), TX (opcional)
@@ -15,19 +15,20 @@ const int MAX_COORDS = 50;
 struct Coordenada {
   float lat;
   float lon;
+  float speed;
 };
 Coordenada buffer[MAX_COORDS];
 int bufferIndex = 0;
 
 // === Cliente HTTP ===
 WiFiClient client;
-const char* host = "ip da maquina que o back";
+const char* host = "192.168.170.xxx";
 int port = 3000;
 String url = "/locations";
 
 // === Controle de tempo ===
 unsigned long ultimoColetaEnvio = 0;
-const unsigned long intervalo = 6000;
+const unsigned long intervalo = 60000;  // 30 segundos em milissegundos
 
 void setup() {
   Serial.begin(9600);
@@ -45,10 +46,12 @@ void loop() {
     if (gps.location.isUpdated() && gps.location.isValid()) {
       float lat = gps.location.lat();
       float lon = gps.location.lng();
+      float speed = gps.speed.kmph();
 
       Serial.println("\n🛰️ Nova coordenada:");
       Serial.print("Latitude: "); Serial.println(lat, 6);
       Serial.print("Longitude: "); Serial.println(lon, 6);
+      Serial.print("Velocidade (km/h): "); Serial.println(speed, 2);
 
       if (WiFi.status() != WL_CONNECTED) {
         conectarWiFi();
@@ -59,10 +62,10 @@ void loop() {
         enviarBuffer();
       }
 
-      if (WiFi.status() == WL_CONNECTED && enviarCoordenada(lat, lon)) {
+      if (WiFi.status() == WL_CONNECTED && enviarCoordenada(lat, lon, speed)) {
         Serial.println("📤 Coordenada enviada com sucesso.");
       } else {
-        armazenarLocalmente(lat, lon);
+        armazenarLocalmente(lat, lon, speed);
       }
     }
 
@@ -88,9 +91,9 @@ void conectarWiFi() {
   }
 }
 
-void armazenarLocalmente(float lat, float lon) {
+void armazenarLocalmente(float lat, float lon, float speed) {
   if (bufferIndex < MAX_COORDS) {
-    buffer[bufferIndex++] = { lat, lon };
+    buffer[bufferIndex++] = { lat, lon, speed };
     Serial.print("💾 Coordenada armazenada no buffer. Total: ");
     Serial.println(bufferIndex);
   } else {
@@ -100,7 +103,7 @@ void armazenarLocalmente(float lat, float lon) {
 
 void enviarBuffer() {
   for (int i = 0; i < bufferIndex; i++) {
-    if (!enviarCoordenada(buffer[i].lat, buffer[i].lon)) {
+    if (!enviarCoordenada(buffer[i].lat, buffer[i].lon, buffer[i].speed)) {
       Serial.print("❌ Falha ao enviar coordenada do buffer [");
       Serial.print(i + 1);
       Serial.println("]");
@@ -112,8 +115,13 @@ void enviarBuffer() {
   Serial.println("📦 Buffer enviado e limpo.");
 }
 
-bool enviarCoordenada(float lat, float lon) {
-  String json = "{\"latitude\": " + String(lat, 6) + ", \"longitude\": " + String(lon, 6) + "}";
+bool enviarCoordenada(float lat, float lon, float speed) {
+  String json = "{\n"
+                "  \"latitude\": " + String(lat, 6) + ",\n"
+                "  \"longitude\": " + String(lon, 6) + ",\n"
+                "  \"speed\": " + String(speed, 2) + "\n"
+                "}";
+
   if (client.connect(host, port)) {
     client.println("POST " + url + " HTTP/1.1");
     client.println("Host: " + String(host));
@@ -124,15 +132,31 @@ bool enviarCoordenada(float lat, float lon) {
     client.println();
     client.println(json);
 
-    while (client.connected()) {
-      if (client.available()) {
+    unsigned long timeout = millis();
+    bool status200 = false;
+
+    while (client.connected() && millis() - timeout < 5000) {
+      while (client.available()) {
         String line = client.readStringUntil('\n');
-        if (line == "\r") break;
+        line.trim(); // remove espaços e \r
+
+        // Exibe apenas o status HTTP e os dados de sucesso
+        Serial.println("HTTP response: " + line); 
+
+        if (line.startsWith("HTTP/1.1 200")) {
+          status200 = true;
+        }
       }
     }
 
     client.stop();
-    return true;
+
+    // Retorna apenas se foi 200
+    if (status200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Serial.println("❌ Erro ao conectar no servidor.");
