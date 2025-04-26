@@ -50,7 +50,7 @@ export default function Login({ navigation }: Props) {
 
     try {
       console.log("Iniciando processo de login...");
-      const response = await api.post("/user/login", { email, senha });
+      const response = await api.post("/login", { email, password: senha });
       console.log("Resposta do servidor:", response.data);
 
       if (response.data.token) {

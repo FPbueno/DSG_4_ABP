@@ -2,7 +2,7 @@ import axios from "axios";
 import { loadFromLocalStorage } from "../utils/localStorage";
 
 // Use environment variable or default to localhost
-const API_BASE_URL = "seu ip aqui :3000"; // Substitua seu-ip pelo IP real da sua máquina
+const API_BASE_URL = "http:xx:3000"; // Substitua seu-ip pelo IP real da sua máquina
 console.log("API URL sendo usada:", API_BASE_URL);
 
 const api = axios.create({
