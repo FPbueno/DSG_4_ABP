@@ -1,24 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, Text, TouchableOpacity, Animated } from "react-native";
-import { WebView } from "react-native-webview";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import api from "../services/api";
 
 const OpenStreetMap = () => {
-  const [latitude, setLatitude] = useState<string>("-23.55052");
-  const [longitude, setLongitude] = useState<string>("-46.633308");
+  const [latitude, setLatitude] = useState<number>(-23.55052);
+  const [longitude, setLongitude] = useState<number>(-46.633308);
   const [speed, setSpeed] = useState<string>("0");
   const [selectedLayer, setSelectedLayer] = useState<string>("osm");
-  const webViewRef = useRef<WebView>(null);
+  const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const fetchLastLocation = async () => {
     try {
       const response = await api.get("/locations/last");
       if (response.data) {
-        setLatitude(response.data.latitude.toString());
-        setLongitude(response.data.longitude.toString());
+        setLatitude(parseFloat(response.data.latitude));
+        setLongitude(parseFloat(response.data.longitude));
         setSpeed(response.data.speed.toString());
         updateMap();
       }
@@ -39,106 +39,15 @@ const OpenStreetMap = () => {
   }, []);
 
   const updateMap = () => {
-    if (webViewRef.current) {
-      webViewRef.current.injectJavaScript(`
-        map.setView([${latitude}, ${longitude}], 13);
-        if (marker) {
-          marker.setLatLng([${latitude}, ${longitude}]);
-        } else {
-          marker = L.marker([${latitude}, ${longitude}], {
-            icon: L.divIcon({
-              className: 'custom-marker',
-              html: '<div style="width: 20px; height: 20px; background-color: #3b82f6; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4);"></div>',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10]
-            })
-          }).addTo(map);
-        }
-        true;
-      `);
+    if (mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude,
+        longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
     }
   };
-
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-        <style>
-          body { margin: 0; padding: 0; }
-          #map { height: 100vh; width: 100vw; }
-          .leaflet-control-zoom { border: none !important; }
-          .leaflet-control-zoom a { 
-            background-color: #1e40af !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 4px !important;
-            margin: 2px !important;
-            width: 30px !important;
-            height: 30px !important;
-            line-height: 30px !important;
-            font-size: 16px !important;
-          }
-          .leaflet-control-zoom a:hover { 
-            background-color: #1e3a8a !important;
-          }
-          .leaflet-control-layers { border: none !important; }
-          .leaflet-control-layers-toggle { 
-            background-color: #1e40af !important;
-            border: none !important;
-            border-radius: 4px !important;
-          }
-          .leaflet-control-layers-expanded { 
-            background-color: white !important;
-            border-radius: 4px !important;
-            padding: 10px !important;
-          }
-        </style>
-      </head>
-      <body>
-        <div id="map"></div>
-        <script>
-          var map = L.map('map').setView([${latitude}, ${longitude}], 13);
-          
-          // Base layers
-          var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-          });
-          
-          var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '© Esri'
-          });
-          
-          var darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© CARTO'
-          });
-          
-          // Add default layer
-          osmLayer.addTo(map);
-          
-          // Add layer control
-          var baseLayers = {
-            "OpenStreetMap": osmLayer,
-            "Satélite": satelliteLayer,
-            "Modo Escuro": darkLayer
-          };
-          
-          L.control.layers(baseLayers).addTo(map);
-          
-          var marker = L.marker([${latitude}, ${longitude}], {
-            icon: L.divIcon({
-              className: 'custom-marker',
-              html: '<div style="width: 20px; height: 20px; background-color: #3b82f6; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4);"></div>',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10]
-            })
-          }).addTo(map);
-        </script>
-      </body>
-    </html>
-  `;
 
   return (
     <Animated.View style={[tw`flex-1 bg-[#071025]`, { opacity: fadeAnim }]}>
@@ -169,20 +78,31 @@ const OpenStreetMap = () => {
       </View>
 
       <View style={tw`flex-1 mt-4 rounded-t-3xl overflow-hidden`}>
-        <WebView
-          ref={webViewRef}
-          originWhitelist={["*"]}
-          source={{ html }}
+        <MapView
+          ref={mapRef}
+          provider={PROVIDER_GOOGLE}
           style={tw`flex-1`}
-          onMessage={(event) => {
-            // Remove message handling for click events
-            // const data = JSON.parse(event.nativeEvent.data);
-            // if (data.type === "click") {
-            //   setLatitude(data.lat.toString());
-            //   setLongitude(data.lng.toString());
-            // }
+          initialRegion={{
+            latitude,
+            longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           }}
-        />
+          mapType={selectedLayer === "satellite" ? "satellite" : "standard"}
+        >
+          <Marker
+            coordinate={{
+              latitude,
+              longitude,
+            }}
+            title="Localização Atual"
+            description={`Velocidade: ${speed} km/h`}
+          >
+            <View
+              style={tw`bg-blue-500 w-5 h-5 rounded-full border-2 border-white shadow-lg`}
+            />
+          </Marker>
+        </MapView>
       </View>
     </Animated.View>
   );

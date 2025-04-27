@@ -69,9 +69,11 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={tw`flex-1 bg-[#071025] p-4`}>
-      <Text style={tw`text-2xl text-white font-bold mb-4 text-center`}>
-        Monitoramento da Boia
-      </Text>
+      <View style={tw`py-6 mb-4`}>
+        <Text style={tw`text-3xl text-white font-bold text-center`}>
+          Monitoramento da Boia
+        </Text>
+      </View>
 
       <View style={tw`flex-1`}>
         <View style={tw`h-[30%] mb-8`}>
