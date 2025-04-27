@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Platform,
-  SafeAreaView,
-} from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { APIKEY } from "@env";
+import api from "../services/api";
 
 const apiKey = APIKEY;
+
+interface LocationData {
+  id: number;
+  latitude: number;
+  longitude: number;
+  speed: number;
+  created_at: string;
+}
 
 interface WeatherData {
   current: {
@@ -24,127 +21,172 @@ interface WeatherData {
     humidity: number;
     wind_kph: number;
     precip_mm: number;
+    condition: {
+      text: string;
+      icon: string;
+    };
+  };
+  location: {
+    name: string;
+    region: string;
   };
 }
 
-const WeatherCard = () => {
-  const [city, setCity] = useState("Jacareí");
-  const [userInput, setUserInput] = useState("Jacareí");
+const WeatherCard: React.FC = () => {
+  const [location, setLocation] = useState<LocationData | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchLocation = async () => {
+    try {
+      const response = await api.get("/locations/last");
+      setLocation(response.data);
+    } catch (error) {
+      setError("Erro ao buscar localização da boia");
+    }
+  };
+
   const fetchWeatherData = async () => {
-    if (!city.trim()) return;
+    if (!location) return;
     setLoading(true);
     try {
       const response = await fetch(
-        `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
+        `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location.latitude},${location.longitude}&aqi=no`
       );
       const data = await response.json();
       if (data.error) throw new Error("Erro ao buscar dados");
       setWeatherData(data);
     } catch (error) {
-      setError("Erro ao acessar a API.");
+      setError("Erro ao acessar a API de clima");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchWeatherData();
-  }, [city]);
+    fetchLocation();
+  }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#4A90E2" />;
-  }
+  useEffect(() => {
+    if (location) {
+      fetchWeatherData();
+    }
+  }, [location]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={tw`flex-1 bg-[#071025]`}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={tw`flex-1`}>
-          <ScrollView
-            contentContainerStyle={tw`flex-grow`}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={tw`items-center p-4`}>
-              <TextInput
-                style={tw`w-full p-3 mb-4 text-lg bg-gray-800 text-white rounded-xl border-2 border-blue-800`}
-                placeholder="Digite a cidade"
-                placeholderTextColor="#9CA3AF"
-                value={userInput}
-                onChangeText={setUserInput}
-              />
-
-              <TouchableOpacity
-                style={tw`w-full py-3 mb-4 bg-blue-800 rounded-lg items-center`}
-                onPress={() => setCity(userInput)}
-              >
-                <Text style={tw`text-white text-lg font-semibold`}>
-                  Buscar Cidade
-                </Text>
-              </TouchableOpacity>
-
-              {error ? (
-                <Text style={tw`text-red-500`}>{error}</Text>
-              ) : weatherData ? (
-                <View style={tw`w-full flex-row justify-center gap-4`}>
-                  <View
-                    style={tw`w-24 h-24 p-3 bg-gray-800 rounded-full shadow-lg items-center justify-center`}
-                  >
-                    <Ionicons
-                      name="thermometer"
-                      size={24}
-                      color="#4A90E2"
-                      style={tw`mb-1`}
-                    />
-                    <Text style={tw`text-xs text-gray-300`}>Temp</Text>
-                    <Text style={tw`text-lg font-bold text-blue-800`}>
-                      {weatherData.current.temp_c}°C
-                    </Text>
-                  </View>
-
-                  <View
-                    style={tw`w-24 h-24 p-3 bg-gray-800 rounded-full shadow-lg items-center justify-center`}
-                  >
-                    <Ionicons
-                      name="water"
-                      size={24}
-                      color="#4A90E2"
-                      style={tw`mb-1`}
-                    />
-                    <Text style={tw`text-xs text-gray-300`}>Umidade</Text>
-                    <Text style={tw`text-lg font-bold text-blue-800`}>
-                      {weatherData.current.humidity}%
-                    </Text>
-                  </View>
-
-                  <View
-                    style={tw`w-24 h-24 p-3 bg-gray-800 rounded-full shadow-lg items-center justify-center`}
-                  >
-                    <Ionicons
-                      name="rainy"
-                      size={24}
-                      color="#4A90E2"
-                      style={tw`mb-1`}
-                    />
-                    <Text style={tw`text-xs text-gray-300`}>Chuva</Text>
-                    <Text style={tw`text-lg font-bold text-blue-800`}>
-                      {weatherData.current.precip_mm}mm
-                    </Text>
-                  </View>
-                </View>
-              ) : null}
+    <View style={styles.container}>
+      {weatherData ? (
+        <>
+          <Text style={styles.location}>
+            {weatherData.location.name}, {weatherData.location.region}
+          </Text>
+          <View style={styles.weatherGrid}>
+            <View style={styles.weatherItem}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="thermometer" size={24} color="#0A2463" />
+              </View>
+              <Text style={styles.weatherLabel}>Temperatura</Text>
+              <Text style={styles.weatherValue}>
+                {weatherData.current.temp_c}°C
+              </Text>
             </View>
-          </ScrollView>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+
+            <View style={styles.weatherItem}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="water" size={24} color="#0A2463" />
+              </View>
+              <Text style={styles.weatherLabel}>Umidade</Text>
+              <Text style={styles.weatherValue}>
+                {weatherData.current.humidity}%
+              </Text>
+            </View>
+
+            <View style={styles.weatherItem}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="rainy" size={24} color="#0A2463" />
+              </View>
+              <Text style={styles.weatherLabel}>Chuva</Text>
+              <Text style={styles.weatherValue}>
+                {weatherData.current.precip_mm}mm
+              </Text>
+            </View>
+          </View>
+        </>
+      ) : (
+        <View style={tw`flex-1 justify-center items-center`}>
+          <ActivityIndicator size="large" color="#4A90E2" />
+          <Text style={styles.errorText}>Carregando dados climáticos...</Text>
+        </View>
+      )}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    margin: 10,
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+  },
+  location: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "poppins-bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  weatherGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    width: "100%",
+    gap: 10,
+  },
+  weatherItem: {
+    width: "30%",
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 15,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  weatherLabel: {
+    color: "#0A2463",
+    fontSize: 14,
+    fontFamily: "poppins-regular",
+    marginBottom: 5,
+  },
+  weatherValue: {
+    color: "#0A2463",
+    fontSize: 18,
+    fontFamily: "poppins-bold",
+  },
+  errorText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "poppins-regular",
+    marginTop: 10,
+    textAlign: "center",
+  },
+});
 
 export default WeatherCard;
