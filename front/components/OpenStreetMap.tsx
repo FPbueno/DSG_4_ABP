@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, Animated } from "react-native";
+import { View, Text, TouchableOpacity, Animated, Platform } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -48,6 +48,46 @@ const OpenStreetMap = () => {
       });
     }
   };
+
+  if (Platform.OS === "web") {
+    return (
+      <Animated.View style={[tw`flex-1 bg-[#071025]`, { opacity: fadeAnim }]}>
+        <View style={tw`mt-4 mx-4`}>
+          <View style={tw`flex-row items-center mb-2`}>
+            <Ionicons name="speedometer" size={20} color="#3b82f6" />
+            <Text style={tw`text-lg font-semibold text-white ml-2`}>
+              Velocidade:
+            </Text>
+          </View>
+          <View
+            style={tw`border p-3 rounded-xl text-lg bg-gray-800 text-white border-blue-800 shadow-lg`}
+          >
+            <Text style={tw`text-white text-lg`}>{speed} km/h</Text>
+          </View>
+        </View>
+
+        <View style={tw`mt-6 mx-4`}>
+          <TouchableOpacity
+            style={tw`bg-blue-800 p-4 rounded-xl shadow-lg flex-row items-center justify-center`}
+            onPress={updateMap}
+          >
+            <Ionicons name="refresh" size={24} color="white" />
+            <Text style={tw`text-white text-center text-lg font-semibold ml-2`}>
+              Atualizar Mapa
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={tw`flex-1 mt-4 rounded-t-3xl overflow-hidden`}>
+          <View style={tw`flex-1 bg-gray-800 items-center justify-center p-4`}>
+            <Text style={tw`text-white text-center text-lg`}>
+              Visualização do mapa disponível apenas em dispositivos móveis
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+    );
+  }
 
   return (
     <Animated.View style={[tw`flex-1 bg-[#071025]`, { opacity: fadeAnim }]}>

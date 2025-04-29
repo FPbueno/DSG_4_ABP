@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  Platform,
 } from "react-native";
 import api from "../services/api";
 import StatisticsCard from "../components/StatisticsCard";
@@ -254,14 +255,23 @@ const Statistics = () => {
   };
 
   const renderMap = () => {
+    if (Platform.OS === "web") {
+      return (
+        <View style={styles.mapContainer}>
+          <Text style={styles.mapTitle}>Trajeto Percorrido</Text>
+          <View style={styles.webPlaceholder}>
+            <Text style={styles.webPlaceholderText}>
+              Visualização do mapa disponível apenas em dispositivos móveis
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
     return (
-      <View style={[styles.chartContainer, styles.mapContainer]}>
-        <Text style={styles.chartTitle}>Trajeto Percorrido</Text>
-        <MapView
-          style={styles.map}
-          initialRegion={getInitialRegion(locations)}
-          scrollEnabled={false}
-        >
+      <View style={styles.mapContainer}>
+        <Text style={styles.mapTitle}>Trajeto Percorrido</Text>
+        <MapView style={styles.map} initialRegion={getInitialRegion(locations)}>
           <Polyline
             coordinates={locations.map((location) => ({
               latitude: parseFloat(location.latitude),
@@ -351,32 +361,7 @@ const Statistics = () => {
 
           <View style={styles.mapSection}>
             <Text style={styles.sectionTitle}>Trajeto Percorrido</Text>
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                initialRegion={getInitialRegion(locations)}
-              >
-                <Polyline
-                  coordinates={locations.map((location) => ({
-                    latitude: parseFloat(location.latitude),
-                    longitude: parseFloat(location.longitude),
-                  }))}
-                  strokeColor="#FF0000"
-                  strokeWidth={2}
-                />
-                {locations.map((location, index) => (
-                  <Marker
-                    key={location.id}
-                    coordinate={{
-                      latitude: parseFloat(location.latitude),
-                      longitude: parseFloat(location.longitude),
-                    }}
-                    title={`Ponto ${index + 1}`}
-                    description={`Velocidade: ${location.speed} km/h`}
-                  />
-                ))}
-              </MapView>
-            </View>
+            <View style={styles.mapContainer}>{renderMap()}</View>
           </View>
         </>
       )}
@@ -510,12 +495,18 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     height: 300,
-    backgroundColor: "#0A2463",
+    marginBottom: 20,
     borderRadius: 10,
     overflow: "hidden",
   },
+  mapTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "poppins-bold",
+    marginBottom: 10,
+  },
   map: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
   },
   errorText: {
     color: "#ff0000",
@@ -576,6 +567,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 10,
     fontFamily: "poppins-regular",
+  },
+  webPlaceholder: {
+    flex: 1,
+    backgroundColor: "#1a1a1a",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  webPlaceholderText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
   },
 });
 

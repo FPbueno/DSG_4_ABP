@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 
 interface Location {
@@ -39,6 +39,19 @@ const LocationMap: React.FC<LocationMapProps> = ({ locations }) => {
       longitudeDelta: (maxLng - minLng) * 1.5,
     };
   };
+
+  if (Platform.OS === "web") {
+    return (
+      <View style={styles.mapContainer}>
+        <Text style={styles.mapTitle}>Trajeto Percorrido</Text>
+        <View style={styles.webPlaceholder}>
+          <Text style={styles.webPlaceholderText}>
+            Visualização do mapa disponível apenas em dispositivos móveis
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.mapContainer}>
@@ -83,6 +96,18 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  webPlaceholder: {
+    flex: 1,
+    backgroundColor: "#1a1a1a",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  webPlaceholderText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
   },
 });
 
