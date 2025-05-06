@@ -194,23 +194,38 @@ class UserController {
   public async updateMail(req: Request, res: Response): Promise<void> {
     const { mail } = req.body;
     const { id } = res.locals;
+  
+    // Verificar se o e-mail foi passado
     if (!mail) {
       res.json({ erro: "Forneça o novo e-mail" });
     } else {
-      const r: any = await query(
-        "UPDATE users SET mail=$2 WHERE id=$1 RETURNING id, mail, profile",
-        [id, mail]
-      );
-
-      if (r.rowcount == 1) {
-        res.json({ mail });
-      } else if (r.message.startsWith("duplicate key")) {
-        res.json({ erro: `O e-mail ${mail} já existe no cadastro` });
-      } else {
-        res.json({ erro: "Não foi possível alterar o e-mail" });
+      try {
+        // Log para ver os dados que estão sendo passados
+        console.log("Atualizando e-mail para o ID:", id, "Novo e-mail:", mail);
+  
+        const r: any = await query(
+          "UPDATE users SET email=$2 WHERE id=$1 RETURNING id, email",  // Aqui troquei "mail" por "email"
+          [id, mail]
+        );
+        
+  
+        // Verificando o retorno da query
+        console.log("Resultado da query:", r);
+  
+        if (r.rowcount == 1) {
+          res.json({ mail });
+        } else if (r.message && r.message.startsWith("duplicate key")) {
+          res.json({ erro: `O e-mail ${mail} já existe no cadastro` });
+        } else {
+          res.json({ erro: "Não foi possível alterar o e-mail" });
+        }
+      } catch (error) {
+        console.error("Erro na atualização do e-mail:", error);
+        res.json({ erro: "Erro na atualização do e-mail" });
       }
     }
   }
+  
 
   public async updatePassword(req: Request, res: Response): Promise<void> {
     const { password } = req.body;

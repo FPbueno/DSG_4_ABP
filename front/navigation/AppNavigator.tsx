@@ -21,6 +21,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { DrawerItem } from "@react-navigation/drawer";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import ConfiguraConta from "screens/ConfiguraConta";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -96,6 +97,13 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
             <MaterialCommunityIcons name="logout" color={color} size={size} />
           )}
         />
+        <DrawerItem
+          label="Alterar Senha"
+          onPress={() => navigation.navigate("ResetPassword")}
+          icon={({ color, size }) => (
+            <MaterialCommunityIcons name="lock-reset" color={color} size={size} />
+          )}
+        />
       </View>
     </View>
   );
@@ -139,6 +147,21 @@ const MainDrawer = () => {
           </MainLayout>
         )}
       </Drawer.Screen>
+      <Drawer.Screen name="ConfiguraConta">
+        {(props) => (
+          <MainLayout {...props}>
+            <ConfiguraConta />
+          </MainLayout>
+        )}
+      </Drawer.Screen>
+      <Drawer.Screen name="ResetPassword">
+        {(props) => (
+          <MainLayout {...props}>
+            <ResetPassword />
+          </MainLayout>
+        )}
+      </Drawer.Screen>
+
     </Drawer.Navigator>
   );
 };
@@ -194,11 +217,11 @@ export const AppNavigator = () => {
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
-            <Stack.Screen name="Recuperacao" component={Recuperacao} />
             <Stack.Screen name="ResetPassword" component={ResetPassword} />
           </>
         ) : (
           <Stack.Screen name="MainDrawer" component={MainDrawer} />
+
         )}
       </Stack.Navigator>
     </NavigationContainer>

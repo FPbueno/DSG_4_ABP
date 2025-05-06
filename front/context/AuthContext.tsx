@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "services/api";
 
 // Definição do tipo para o contexto
 interface AuthContextProps {
@@ -8,7 +9,9 @@ interface AuthContextProps {
   login: (token: string, userId: string) => void;
   logout: () => void;
   userId: string | null;
+  updateMail: (mail: string) => Promise<boolean>;
 }
+
 
 // Definição do tipo para as propriedades do provider
 interface AuthProviderProps {
@@ -73,9 +76,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Error removing user data:", error);
     }
   };
+// Função de atualização do e-mail
+async function updateMail(mail: string): Promise<boolean> {
+  try {
+    // Verificando se o userId existe antes de tentar enviar a requisição
+    if (!userId) {
+      console.error("ID do usuário não encontrado.");
+      return false;
+    }
+
+    // Adicionando um log para verificar o userId e o mail
+    console.log("Atualizando e-mail para o ID:", userId, "Novo e-mail:", mail);
+
+    // Fazendo a requisição PUT com o userId e o mail
+    const response = await axios.put("http://10.68.55.166:3000/user/mail", { mail, id: userId });
+
+    // Verificando a resposta para determinar o sucesso ou falha
+    if (response.data.erro) {
+      console.error("Erro ao atualizar e-mail:", response.data.erro);
+      return false;
+    }
+
+    // Se o e-mail foi atualizado com sucesso
+    console.log("E-mail atualizado:", response.data.mail);
+    return true;
+
+  } catch (error) {
+    // Melhorando o tratamento de erro
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        console.error("Erro HTTP:", error.response.status);
+        console.error("Detalhes do erro:", error.response.data);
+        alert(`Erro: ${error.response.data.erro || "Erro desconhecido"}`);
+      } else {
+        console.error("Erro na requisição:", error.message);
+      }
+    } else {
+      console.error("Erro desconhecido:", error);
+    }
+
+    return false;
+  }
+}
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, userId }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, userId,  updateMail }}>  
       {children}
     </AuthContext.Provider>
   );

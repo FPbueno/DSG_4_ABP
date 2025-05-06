@@ -13,6 +13,7 @@ type RootDrawerParamList = {
   ConfiguraConta: undefined;
   Privacidade: undefined;
   Login: undefined;
+  ResetPassword:undefined
 };
 
 const SettingsScreen = () => {
@@ -54,7 +55,7 @@ const SettingsScreen = () => {
 
         {/* Opção de Conta */}
         <TouchableOpacity
-          style={tw`w-full flex-row items-center p-4 bg-gray-800 rounded-lg mb-4`}
+          style={tw`w-full flex-row items-center p-4 bg-[#0A2463] rounded-full mb-4 `}
           onPress={() => navigation.navigate("ConfiguraConta")}
         >
           <Ionicons name="person-outline" size={24} color="white" />
@@ -63,7 +64,7 @@ const SettingsScreen = () => {
 
         {/* Notificações */}
         <View
-          style={tw`w-full flex-row justify-between items-center p-4 bg-gray-800 rounded-lg mb-4`}
+          style={tw`w-full flex-row justify-between items-center p-4 bg-[#0A2463] rounded-full mb-4`}
         >
           <View style={tw`flex-row items-center`}>
             <Ionicons name="notifications-outline" size={24} color="white" />
@@ -78,8 +79,8 @@ const SettingsScreen = () => {
 
         {/* Privacidade */}
         <TouchableOpacity
-          style={tw`w-full flex-row items-center p-4 bg-gray-800 rounded-lg mb-4`}
-          onPress={() => navigation.navigate("Privacidade")}
+          style={tw`w-full flex-row items-center p-4 bg-[#0A2463] rounded-full mb-4`}
+          onPress={() => navigation.navigate("ResetPassword")}
         >
           <Ionicons name="lock-closed-outline" size={24} color="white" />
           <Text style={tw`text-white text-lg ml-3`}>Privacidade</Text>
@@ -87,7 +88,7 @@ const SettingsScreen = () => {
 
         {/* Botão de Logout */}
         <TouchableOpacity
-          style={tw`w-full flex-row items-center p-4 bg-red-600 rounded-lg`}
+          style={tw`w-full flex-row items-center p-4 bg-red-600 rounded-full`}
           onPress={handleLogout}
         >
           <Ionicons name="log-out-outline" size={24} color="white" />

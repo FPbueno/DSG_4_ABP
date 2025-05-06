@@ -16,14 +16,12 @@ export interface WeatherCurrent {
 export interface WeatherData {
   current: WeatherCurrent;
 }
-import { ReactNode } from "react";
+
 
 export interface UserContextProps {
   loading: boolean;
-  users: UserProps[] | null;
   token: TokenProps | null;
   userId?: string | null;
-  profile: ProfileProps | null;
   setToken: (value: TokenProps | null) => void;
   login: (mail: string, password: string) => Promise<void>;
   logout: () => void;
@@ -55,21 +53,7 @@ export interface ErrorProps {
   error: string;
 }
 
-export interface UserProps {
-  id: string;
-  alias: string;
-  mail: string;
-  idade: string;
-  peso: number;
-  altura: number;
-  role: string;
-}
 
-export interface ProfileProps {
-  birth_date: string;
-  weight: string;
-  sex: string;
-}
 
 export interface ProviderProps {
   children: React.ReactNode;
