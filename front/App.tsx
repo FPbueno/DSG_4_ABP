@@ -6,7 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { Alert } from "react-native";
 
 // Defina o limite de velocidade para a boia
-const VELOCIDADE_LIMITE = 50; // 50 km/h
+const VELOCIDADE_LIMITE = 5; // 5 km/h
 
 export default function App() {
   // Carregando as fontes com o hook useFonts
@@ -20,11 +20,12 @@ export default function App() {
 
   // Função para mostrar o alerta de velocidade
   const mostrarAlertaVelocidade = () => {
+    console.log(`Alerta disparado! Velocidade: ${velocidade.toFixed(1)} km/h`);
     Alert.alert(
-      "Alerta de Velocidade!",
-      `A boia está se movendo muito rápido! Velocidade: ${velocidade.toFixed(
+      "⚠️ Alerta de Velocidade!",
+      `A boia está se movendo acima do limite permitido!\n\nVelocidade atual: ${velocidade.toFixed(
         1
-      )} km/h`,
+      )} km/h\nLimite permitido: ${VELOCIDADE_LIMITE} km/h`,
       [{ text: "OK" }]
     );
   };
@@ -35,7 +36,7 @@ export default function App() {
     const intervalo = setInterval(() => {
       // Aqui você deve colocar a lógica para obter a velocidade real (como no seu código de GPS)
       // Vou simular com um valor aleatório como exemplo
-      const novaVelocidade = Math.random() * 20; // valor aleatório entre 0 e 20 km/h
+      const novaVelocidade = Math.random() * 8; // valor aleatório entre 0 e 8 km/h
       setVelocidade(novaVelocidade);
 
       // Verificar se a velocidade ultrapassou o limite
