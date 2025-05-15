@@ -19,21 +19,21 @@ const Footer = () => {
         style={styles.footerButton}
         onPress={() => navigation.navigate("Map")}
       >
-        <Ionicons name="map" size={24} color="#fff" />
+        <Ionicons name="map" size={32} color="#fff" />
         <Text style={styles.footerText}>Mapa</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.footerButton}
         onPress={() => navigation.navigate("Home")}
       >
-        <Ionicons name="home" size={24} color="#fff" />
+        <Ionicons name="home" size={32} color="#fff" />
         <Text style={styles.footerText}>Home</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.footerButton}
         onPress={() => navigation.navigate("Statistics")}
       >
-        <Ionicons name="stats-chart" size={24} color="#fff" />
+        <Ionicons name="stats-chart" size={32} color="#fff" />
         <Text style={styles.footerText}>Estatísticas</Text>
       </TouchableOpacity>
     </View>
@@ -46,24 +46,32 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "#0A2463",
-    height: 80,
+    height: 100,
     position: "absolute",
-    bottom: 0,
+    bottom: 35,
     left: 0,
     right: 0,
     zIndex: 1000,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   footerButton: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   footerText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "poppins-regular",
-    marginTop: 6,
+    marginTop: 8,
   },
 });
 

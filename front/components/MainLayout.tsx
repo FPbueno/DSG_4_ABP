@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingBottom: 80, // Aumentado para acomodar o footer maior
+    paddingBottom: 100, // Ajustado para a nova altura do footer
   },
 });
 

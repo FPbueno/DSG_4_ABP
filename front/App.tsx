@@ -3,10 +3,10 @@ import { useFonts } from "expo-font"; // Importa o hook para carregar fontes
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppNavigator } from "./navigation/AppNavigator";
 import { AuthProvider } from "./context/AuthContext";
-import * as Notifications from "expo-notifications"; // Importa o pacote de notificações do Expo
+import { Alert } from "react-native";
 
 // Defina o limite de velocidade para a boia
-const VELOCIDADE_LIMITE = 10; // 10 km/h
+const VELOCIDADE_LIMITE = 50; // 50 km/h
 
 export default function App() {
   // Carregando as fontes com o hook useFonts
@@ -18,18 +18,18 @@ export default function App() {
   // Estado da velocidade (simulado aqui para exemplo)
   const [velocidade, setVelocidade] = useState<number>(0);
 
-  // Função para enviar a notificação
-  const enviarNotificacao = () => {
-    Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Alerta de Velocidade!",
-        body: `A boia está se movendo muito rápido! Velocidade: ${velocidade} km/h`,
-      },
-      trigger: null, // Isso envia imediatamente a notificação
-    });
+  // Função para mostrar o alerta de velocidade
+  const mostrarAlertaVelocidade = () => {
+    Alert.alert(
+      "Alerta de Velocidade!",
+      `A boia está se movendo muito rápido! Velocidade: ${velocidade.toFixed(
+        1
+      )} km/h`,
+      [{ text: "OK" }]
+    );
   };
 
-  // Função para simular a leitura de dados do GPS (aqui você integraria com seu backend ou sensores)
+  // Função para simular a leitura de dados do GPS
   useEffect(() => {
     // Exemplo: A cada 5 segundos, a velocidade é atualizada
     const intervalo = setInterval(() => {
@@ -40,7 +40,7 @@ export default function App() {
 
       // Verificar se a velocidade ultrapassou o limite
       if (novaVelocidade > VELOCIDADE_LIMITE) {
-        enviarNotificacao(); // Disparar a notificação
+        mostrarAlertaVelocidade(); // Mostrar o alerta
       }
     }, 5000); // A cada 5 segundos
 

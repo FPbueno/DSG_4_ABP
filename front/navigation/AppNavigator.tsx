@@ -43,10 +43,7 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Login" }],
-      });
+      navigation.navigate("Login");
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -101,7 +98,11 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
           label="Alterar Senha"
           onPress={() => navigation.navigate("ResetPassword")}
           icon={({ color, size }) => (
-            <MaterialCommunityIcons name="lock-reset" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="lock-reset"
+              color={color}
+              size={size}
+            />
           )}
         />
       </View>
@@ -161,7 +162,6 @@ const MainDrawer = () => {
           </MainLayout>
         )}
       </Drawer.Screen>
-
     </Drawer.Navigator>
   );
 };
@@ -218,10 +218,10 @@ export const AppNavigator = () => {
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="ResetPassword" component={ResetPassword} />
+            <Stack.Screen name="Recuperacao" component={Recuperacao} />
           </>
         ) : (
           <Stack.Screen name="MainDrawer" component={MainDrawer} />
-
         )}
       </Stack.Navigator>
     </NavigationContainer>

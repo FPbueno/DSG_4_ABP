@@ -69,14 +69,14 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={tw`flex-1 bg-[#071025] p-4`}>
-      <View style={tw`py-6 mb-4`}>
+      <View style={tw`py-0 mb-0`}>
         <Text style={tw`text-3xl text-white font-bold text-center`}>
           Monitoramento da Boia
         </Text>
       </View>
 
       <View style={tw`flex-1`}>
-        <View style={tw`h-[30%] mb-8`}>
+        <View style={tw`h-[15%] mb-0`}>
           <WeatherCard />
         </View>
 

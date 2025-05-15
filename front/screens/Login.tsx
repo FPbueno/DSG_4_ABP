@@ -58,13 +58,8 @@ export default function Login({ navigation }: Props) {
         await login(response.data.token, response.data.id.toString());
         console.log("Dados do usuário salvos, navegando para MainDrawer...");
 
-        // Usar navigation.reset para limpar a pilha de navegação
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "MainDrawer" }],
-          })
-        );
+        // Navegar para MainDrawer usando navigate
+        navigation.navigate("MainDrawer");
       }
     } catch (error: any) {
       console.error("Erro durante o login:", error);
