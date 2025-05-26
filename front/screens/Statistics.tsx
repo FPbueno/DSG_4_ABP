@@ -7,10 +7,15 @@ import {
   ActivityIndicator,
   Dimensions,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import api from "../services/api";
 import StatisticsCard from "../components/StatisticsCard";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import * as Print from "expo-print";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface Location {
   id: number;
@@ -304,6 +309,125 @@ const Statistics = () => {
     setCurrentSlide(currentIndex);
   };
 
+  const exportToCSV = async () => {
+    try {
+      if (locations.length === 0) {
+        alert("Não há dados para exportar");
+        return;
+      }
+
+      const headers = ["ID", "Latitude", "Longitude", "Velocidade (km/h)"];
+      const csvContent = [
+        headers.join(","),
+        ...locations.map((loc) =>
+          [loc.id, loc.latitude, loc.longitude, loc.speed].join(",")
+        ),
+      ].join("\n");
+
+      const fileUri = `${FileSystem.cacheDirectory}estatisticas.csv`;
+      await FileSystem.writeAsStringAsync(fileUri, csvContent);
+
+      if (Platform.OS === "web") {
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "estatisticas.csv";
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        await Sharing.shareAsync(fileUri);
+      }
+    } catch (error) {
+      console.error("Erro ao exportar CSV:", error);
+      alert("Erro ao exportar CSV");
+    }
+  };
+
+  const exportToPDF = async () => {
+    try {
+      if (locations.length === 0) {
+        alert("Não há dados para exportar");
+        return;
+      }
+
+      const stats = calculateStats();
+      const totalDistance = locations.reduce((acc, curr, index) => {
+        if (index === 0) return 0;
+        const prevLoc = locations[index - 1];
+        return (
+          acc +
+          calculateDistance(
+            parseFloat(prevLoc.latitude),
+            parseFloat(prevLoc.longitude),
+            parseFloat(curr.latitude),
+            parseFloat(curr.longitude)
+          )
+        );
+      }, 0);
+
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              h1 { color: #333; }
+              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f5f5f5; }
+            </style>
+          </head>
+          <body>
+            <h1>Relatório de Estatísticas</h1>
+            <h2>Resumo</h2>
+            <p>Velocidade Média: ${stats?.avgSpeed} km/h</p>
+            <p>Velocidade Máxima: ${stats?.maxSpeed} km/h</p>
+            <p>Velocidade Mínima: ${stats?.minSpeed} km/h</p>
+            <p>Distância Total: ${totalDistance.toFixed(2)} km</p>
+            
+            <h2>Dados Detalhados</h2>
+            <table>
+              <tr>
+                <th>ID</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Velocidade (km/h)</th>
+              </tr>
+              ${locations
+                .map(
+                  (loc) => `
+                <tr>
+                  <td>${loc.id}</td>
+                  <td>${loc.latitude}</td>
+                  <td>${loc.longitude}</td>
+                  <td>${loc.speed}</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </table>
+          </body>
+        </html>
+      `;
+
+      if (Platform.OS === "web") {
+        const blob = new Blob([htmlContent], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "estatisticas.pdf";
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        const { uri } = await Print.printToFileAsync({ html: htmlContent });
+        await Sharing.shareAsync(uri);
+      }
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
+      alert("Erro ao exportar PDF");
+    }
+  };
+
   if (loading && locations.length === 0) {
     return (
       <View style={styles.container}>
@@ -314,7 +438,22 @@ const Statistics = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Estatísticas de Deslocamento</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Estatísticas de Deslocamento</Text>
+      </View>
+      <View style={styles.exportSection}>
+        <Text style={styles.exportTitle}>Exportar Relatório</Text>
+        <View style={styles.exportButtons}>
+          <TouchableOpacity style={styles.exportButton} onPress={exportToCSV}>
+            <MaterialIcons name="file-download" size={24} color="#fff" />
+            <Text style={styles.exportButtonText}>Baixar CSV</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.exportButton} onPress={exportToPDF}>
+            <MaterialIcons name="picture-as-pdf" size={24} color="#fff" />
+            <Text style={styles.exportButtonText}>Baixar PDF</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {locations.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -376,6 +515,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#071025",
     padding: 20,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
   title: {
     color: "#fff",
@@ -579,6 +724,39 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontSize: 16,
+  },
+  exportSection: {
+    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#0A2463",
+    padding: 15,
+    borderRadius: 10,
+  },
+  exportTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "poppins-bold",
+    marginBottom: 10,
+  },
+  exportButtons: {
+    flexDirection: "row",
+    gap: 20,
+    justifyContent: "center",
+  },
+  exportButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1a237e",
+    padding: 12,
+    borderRadius: 8,
+    gap: 8,
+    minWidth: 140,
+    justifyContent: "center",
+  },
+  exportButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "poppins-medium",
   },
 });
 
