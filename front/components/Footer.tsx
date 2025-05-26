@@ -1,5 +1,11 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Platform,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,21 +25,21 @@ const Footer = () => {
         style={styles.footerButton}
         onPress={() => navigation.navigate("Map")}
       >
-        <Ionicons name="map" size={32} color="#fff" />
+        <Ionicons name="map" size={28} color="#fff" />
         <Text style={styles.footerText}>Mapa</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.footerButton}
         onPress={() => navigation.navigate("Home")}
       >
-        <Ionicons name="home" size={32} color="#fff" />
+        <Ionicons name="home" size={28} color="#fff" />
         <Text style={styles.footerText}>Home</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.footerButton}
         onPress={() => navigation.navigate("Statistics")}
       >
-        <Ionicons name="stats-chart" size={32} color="#fff" />
+        <Ionicons name="stats-chart" size={28} color="#fff" />
         <Text style={styles.footerText}>Estatísticas</Text>
       </TouchableOpacity>
     </View>
@@ -46,9 +52,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "#0A2463",
-    height: 100,
+    height: Platform.OS === "ios" ? 70 : 80,
     position: "absolute",
-    bottom: 35,
+    bottom: 0,
     left: 0,
     right: 0,
     zIndex: 1000,
@@ -60,18 +66,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     elevation: 8,
+    paddingBottom: Platform.OS === "ios" ? 15 : 10,
   },
   footerButton: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 16,
+    paddingVertical: 6,
   },
   footerText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: Platform.OS === "ios" ? 12 : 14,
     fontFamily: "poppins-regular",
-    marginTop: 8,
+    marginTop: 4,
   },
 });
 

@@ -1,5 +1,11 @@
 import React from "react";
-import { View, StyleSheet, SafeAreaView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  StatusBar,
+} from "react-native";
 import Header from "./Header";
 import Footer from "./Footer";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
@@ -24,6 +30,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A2463" />
       <View style={styles.container}>
         <Header navigation={navigation} />
         <View style={styles.content}>{children}</View>
@@ -36,7 +43,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#0A2463", // Changed to darker navy blue
+    backgroundColor: "#0A2463",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
@@ -44,7 +52,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingBottom: 100, // Ajustado para a nova altura do footer
+    paddingBottom: Platform.OS === "ios" ? 75 : 85, // Ajustado para o novo tamanho do header
   },
 });
 
