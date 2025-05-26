@@ -14,6 +14,7 @@ import api from "../services/api";
 import { saveToLocalStorage } from "../utils/localStorage";
 import { useAuth } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 // Definir os tipos de navegação para o Stack
 type RootStackParamList = {
@@ -39,6 +40,7 @@ export default function Login({ navigation }: Props) {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const adicionar = async () => {
     if (!email || !senha) {
@@ -91,14 +93,26 @@ export default function Login({ navigation }: Props) {
           value={email}
           onChangeText={setEmail}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry={true}
-          maxLength={8}
-          value={senha}
-          onChangeText={setSenha}
-        />
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={[styles.input, styles.passwordInput]}
+            placeholder="Senha"
+            secureTextEntry={!showPassword}
+            maxLength={8}
+            value={senha}
+            onChangeText={setSenha}
+          />
+          <TouchableOpacity
+            style={styles.eyeButton}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={24}
+              color="#666"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {erro ? (
@@ -218,5 +232,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     marginTop: 5,
+  },
+  passwordContainer: {
+    position: "relative",
+    width: "100%",
+  },
+  passwordInput: {
+    paddingRight: 50, // Espaço para o ícone do olho
+  },
+  eyeButton: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    padding: 5,
   },
 });
