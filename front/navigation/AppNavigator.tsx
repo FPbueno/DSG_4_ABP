@@ -3,6 +3,8 @@ import {
   NavigationContainer,
   useRoute,
   useNavigation,
+  CommonActions,
+  NavigationContainerRef,
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -26,11 +28,13 @@ import ConfiguraConta from "screens/ConfiguraConta";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-type DrawerParamList = {
+export type DrawerParamList = {
   Home: undefined;
   Map: undefined;
   Settings: undefined;
   Statistics: undefined;
+  ConfiguraConta: undefined;
+  ResetPassword: undefined;
 };
 
 interface DrawerContentProps {
@@ -42,8 +46,11 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
 
   const handleLogout = async () => {
     try {
-      await logout();
-      navigation.navigate("Login");
+      navigation.closeDrawer();
+
+      setTimeout(async () => {
+        await logout();
+      }, 100);
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -137,7 +144,7 @@ const MainDrawer = () => {
       <Drawer.Screen name="Settings">
         {(props) => (
           <MainLayout {...props}>
-            <Settings />
+            <Settings navigation={props.navigation} />
           </MainLayout>
         )}
       </Drawer.Screen>
@@ -208,7 +215,6 @@ export const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={isAuthenticated ? "MainDrawer" : "Login"}
         screenOptions={{
           headerShown: false,
         }}
@@ -221,7 +227,14 @@ export const AppNavigator = () => {
             <Stack.Screen name="Recuperacao" component={Recuperacao} />
           </>
         ) : (
-          <Stack.Screen name="MainDrawer" component={MainDrawer} />
+          <Stack.Screen
+            name="MainDrawer"
+            component={MainDrawer}
+            options={{
+              headerShown: false,
+              gestureEnabled: false,
+            }}
+          />
         )}
       </Stack.Navigator>
     </NavigationContainer>

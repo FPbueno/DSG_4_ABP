@@ -8,7 +8,8 @@ routes.post("/recuperar-senha", controller.recoverPassword);
 routes.post("/verificar-codigo", controller.verifyCode);
 routes.post("/redefinir-senha", controller.resetPassword);
 
-// somente o próprio usuário pode acessar
+// rotas que precisam de autenticação
+routes.get("/:id", validadeAcess, controller.getUserById);
 routes.put("/mail", validadeAcess, controller.updateMail);
 routes.put("/senha", validadeAcess, controller.updatePassword);
 

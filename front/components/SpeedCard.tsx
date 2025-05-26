@@ -7,22 +7,19 @@ interface SpeedCardProps {
 }
 
 const SpeedCard: React.FC<SpeedCardProps> = ({ speed }) => {
-  const getSpeedColor = (speed: number) => {
-    if (speed < 2) return "#4CAF50"; // Verde para baixa velocidade
-    if (speed < 5) return "#FFC107"; // Amarelo para velocidade média
-    return "#F44336"; // Vermelho para alta velocidade
-  };
+  // Se a velocidade for menor ou igual a 5 km/h, não renderiza o card de alerta
+  if (speed <= 5 || isNaN(speed)) {
+    return null;
+  }
 
   return (
-    <View style={[styles.container, { borderColor: getSpeedColor(speed) }]}>
-      <Text style={styles.label}>Velocidade Atual</Text>
+    <View style={[styles.container, { borderColor: "#F44336" }]}>
+      <Text style={styles.label}>Alerta de Velocidade</Text>
       <View style={styles.speedContainer}>
         <Text style={styles.speed}>{speed.toFixed(1)}</Text>
         <Text style={styles.unit}>km/h</Text>
       </View>
-      <Text style={styles.status}>
-        {speed < 2 ? "Baixa" : speed < 5 ? "Média" : "Alta"}
-      </Text>
+      <Text style={styles.status}>Velocidade Alta</Text>
     </View>
   );
 };

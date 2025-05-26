@@ -194,7 +194,7 @@ class UserController {
   public async updateMail(req: Request, res: Response): Promise<void> {
     const { mail } = req.body;
     const { id } = res.locals;
-  
+
     // Verificar se o e-mail foi passado
     if (!mail) {
       res.json({ erro: "Forneça o novo e-mail" });
@@ -202,16 +202,15 @@ class UserController {
       try {
         // Log para ver os dados que estão sendo passados
         console.log("Atualizando e-mail para o ID:", id, "Novo e-mail:", mail);
-  
+
         const r: any = await query(
-          "UPDATE users SET email=$2 WHERE id=$1 RETURNING id, email",  // Aqui troquei "mail" por "email"
+          "UPDATE users SET email=$2 WHERE id=$1 RETURNING id, email", // Aqui troquei "mail" por "email"
           [id, mail]
         );
-        
-  
+
         // Verificando o retorno da query
         console.log("Resultado da query:", r);
-  
+
         if (r.rowcount == 1) {
           res.json({ mail });
         } else if (r.message && r.message.startsWith("duplicate key")) {
@@ -225,7 +224,6 @@ class UserController {
       }
     }
   }
-  
 
   public async updatePassword(req: Request, res: Response): Promise<void> {
     const { password } = req.body;
@@ -385,6 +383,31 @@ class UserController {
     } catch (error) {
       console.error("Erro ao redefinir senha:", error);
       res.status(500).json({ erro: "Erro ao redefinir senha" });
+    }
+  }
+
+  public async getUserById(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      console.log("Buscando usuário com ID:", id);
+      const response: any = await query(
+        `SELECT id, email, nome, telefone, pais 
+         FROM users 
+         WHERE id = $1`,
+        [id]
+      );
+
+      if (!response || response.length === 0) {
+        console.log("Usuário não encontrado");
+        res.status(404).json({ erro: "Usuário não encontrado" });
+        return;
+      }
+
+      console.log("Usuário encontrado:", response[0]);
+      res.json(response[0]);
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+      res.status(500).json({ erro: "Erro ao buscar dados do usuário" });
     }
   }
 }

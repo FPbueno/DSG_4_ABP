@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Dimensions } from "react-native";
+import { View, Text, ScrollView, Dimensions, StyleSheet } from "react-native";
 import tw from "twrnc";
 import { useFonts } from "expo-font";
 import SpeedCard from "../components/SpeedCard";
@@ -17,6 +17,44 @@ interface LocationData {
 }
 
 const { width: screenWidth } = Dimensions.get("window");
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#0A2463",
+    borderRadius: 15,
+    padding: 20,
+    margin: 10,
+    borderWidth: 2,
+    alignItems: "center",
+  },
+  label: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "poppins-regular",
+    marginBottom: 10,
+  },
+  speedContainer: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  speed: {
+    color: "#fff",
+    fontSize: 36,
+    fontFamily: "poppins-bold",
+  },
+  unit: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "poppins-regular",
+    marginLeft: 5,
+  },
+  status: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "poppins-regular",
+    marginTop: 10,
+  },
+});
 
 const HomeScreen: React.FC = () => {
   const [fontsLoaded] = useFonts({
@@ -94,7 +132,20 @@ const HomeScreen: React.FC = () => {
               scrollEventThrottle={16}
             >
               <View style={[tw`p-2`, { width: screenWidth - 32 }]}>
-                <SpeedCard speed={locationData.speed} />
+                {locationData.speed > 5 && !isNaN(locationData.speed) ? (
+                  <SpeedCard speed={locationData.speed} />
+                ) : (
+                  <View style={[styles.container, { borderColor: "#4CAF50" }]}>
+                    <Text style={styles.label}>Velocidade Atual</Text>
+                    <View style={styles.speedContainer}>
+                      <Text style={styles.speed}>
+                        {locationData.speed.toFixed(1)}
+                      </Text>
+                      <Text style={styles.unit}>km/h</Text>
+                    </View>
+                    <Text style={styles.status}>Velocidade Normal</Text>
+                  </View>
+                )}
               </View>
               <View style={[tw`p-2`, { width: screenWidth - 32 }]}>
                 <BatteryCard

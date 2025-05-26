@@ -13,6 +13,7 @@ import { CommonActions } from "@react-navigation/native";
 import api from "../services/api";
 import { saveToLocalStorage } from "../utils/localStorage";
 import { useAuth } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Definir os tipos de navegação para o Stack
 type RootStackParamList = {
@@ -55,11 +56,16 @@ export default function Login({ navigation }: Props) {
 
       if (response.data.token) {
         console.log("Token recebido, salvando dados do usuário...");
+        // Salvar dados completos do usuário
+        const userData = {
+          token: response.data.token,
+          userId: response.data.id.toString(),
+          name: response.data.nome || "Usuário",
+          email: response.data.email || email,
+        };
+        await AsyncStorage.setItem("userData", JSON.stringify(userData));
         await login(response.data.token, response.data.id.toString());
-        console.log("Dados do usuário salvos, navegando para MainDrawer...");
-
-        // Navegar para MainDrawer usando navigate
-        navigation.navigate("MainDrawer");
+        console.log("Dados do usuário salvos, autenticação atualizada");
       }
     } catch (error: any) {
       console.error("Erro durante o login:", error);
