@@ -1,7 +1,7 @@
 import axios from "axios";
 import { removeFromLocalStorage } from "../utils/localStorage";
 
-const API_URL = process.env.API_URL || "http://localhost:3000";
+const API_URL = process.env.API_URL || "http://192.168.15.92:3000";
 
 export interface LoginData {
   email: string;
@@ -69,15 +69,24 @@ export const authService = {
 
   async forgotPassword(email: string): Promise<any> {
     try {
+      console.log("Iniciando recuperação de senha para:", email);
+      console.log("URL da API:", API_URL);
+
       const response = await axios.post(`${API_URL}/user/recuperar-senha`, {
         email: email,
       });
+
+      console.log("Resposta do servidor:", response.data);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(
-          error.response.data.error || "Erro ao solicitar recuperação de senha"
-        );
+      console.error("Erro detalhado:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Status do erro:", error.response?.status);
+        console.error("Dados do erro:", error.response?.data);
+
+        if (error.response?.data?.erro) {
+          throw new Error(error.response.data.erro);
+        }
       }
       throw new Error("Erro ao solicitar recuperação de senha");
     }

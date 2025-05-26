@@ -9,6 +9,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendRecoveryEmail = async (email: string, code: string) => {
+  console.log("Tentando enviar email para:", email);
+  console.log("Código de recuperação:", code);
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -30,7 +33,14 @@ export const sendRecoveryEmail = async (email: string, code: string) => {
   };
 
   try {
+    console.log("Configurações do email:", {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject,
+    });
+
     await transporter.sendMail(mailOptions);
+    console.log("Email enviado com sucesso");
     return true;
   } catch (error) {
     console.error("Erro ao enviar email:", error);

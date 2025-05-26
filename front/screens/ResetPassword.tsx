@@ -7,10 +7,14 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { authService } from "../services/authService";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import tw from "twrnc";
 
 type RootStackParamList = {
   Login: undefined;
@@ -37,46 +41,29 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
 
   const handleResetPassword = async () => {
-    console.log("Iniciando redefinição de senha...");
-    console.log("Email:", email);
-    console.log("Código:", code);
-    console.log("Nova senha:", newPassword);
-    console.log("Confirmar senha:", confirmPassword);
-
     if (!code || !newPassword || !confirmPassword) {
-      console.log("Campos vazios detectados");
       Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      console.log("Senhas não coincidem");
       Alert.alert("Erro", "As senhas não coincidem.");
       return;
     }
 
     if (newPassword.length < 6) {
-      console.log("Senha muito curta");
       Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
     setLoading(true);
-    console.log("Iniciando processo de redefinição...");
 
     try {
-      console.log("Verificando código...");
       const verifyResponse = await authService.verifyCode(email, code);
-      console.log("Código verificado com sucesso");
-
-      console.log("Redefinindo senha...");
       await authService.resetPassword(email, newPassword, verifyResponse.token);
-      console.log("Senha redefinida com sucesso");
-
       Alert.alert("Sucesso", "Senha redefinida com sucesso!");
       navigation.navigate("Login");
     } catch (error) {
-      console.error("Erro durante a redefinição:", error);
       Alert.alert(
         "Erro",
         error instanceof Error
@@ -89,69 +76,102 @@ export default function ResetPassword() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Redefinir Senha</Text>
-
-      <Text style={styles.subtitle}>Digite o código enviado para {email}</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Código de verificação"
-        value={code}
-        onChangeText={setCode}
-        keyboardType="numeric"
-        maxLength={6}
-        editable={!loading}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Nova senha"
-        value={newPassword}
-        onChangeText={setNewPassword}
-        secureTextEntry
-        editable={!loading}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmar nova senha"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        editable={!loading}
-      />
-
-      <TouchableOpacity
-        style={[
-          styles.button,
-          loading && styles.buttonDisabled,
-          (!code || !newPassword || !confirmPassword) && styles.buttonDisabled,
-        ]}
-        onPress={handleResetPassword}
-        disabled={loading || !code || !newPassword || !confirmPassword}
-        activeOpacity={0.7}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={tw`flex-1 bg-white`}
+    >
+      <SafeAreaView
+        style={tw`flex-1 justify-center bg-[#071025] items-center p-4`}
       >
-        {loading ? (
-          <View style={styles.buttonContent}>
-            <ActivityIndicator color="#fff" />
-            <Text style={[styles.buttonText, { marginLeft: 10 }]}>
-              Processando...
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.buttonContent}>
-            <Text style={styles.buttonText}>Redefinir Senha</Text>
-          </View>
-        )}
-      </TouchableOpacity>
+        <View style={tw`w-full max-w-md`}>
+          <Text
+            style={[
+              tw`text-2xl text-[#fff] mb-6 text-center`,
+              { fontFamily: "Poppins-Regular" },
+            ]}
+          >
+            Redefinir Senha
+          </Text>
 
-      {(!code || !newPassword || !confirmPassword) && (
-        <Text style={styles.helperText}>
-          Preencha todos os campos para redefinir sua senha
-        </Text>
-      )}
-    </View>
+          <Text
+            style={[
+              tw`text-base text-[#fff] mb-4`,
+              { fontFamily: "Poppins-Regular" },
+            ]}
+          >
+            Digite o código enviado para {email}
+          </Text>
+
+          <TextInput
+            style={[
+              tw`w-full p-3 mb-4 text-[16px] text-white bg-[#0A1538] rounded-xl border-2 border-black`,
+              { fontFamily: "Poppins-Regular" },
+            ]}
+            placeholder="Código de verificação"
+            placeholderTextColor="#999"
+            value={code}
+            onChangeText={setCode}
+            keyboardType="numeric"
+            maxLength={6}
+            editable={!loading}
+          />
+
+          <TextInput
+            style={[
+              tw`w-full p-3 mb-4 text-[16px] text-white bg-[#0A1538] rounded-xl border-2 border-black`,
+              { fontFamily: "Poppins-Regular" },
+            ]}
+            placeholder="Nova senha"
+            placeholderTextColor="#999"
+            value={newPassword}
+            onChangeText={setNewPassword}
+            secureTextEntry
+            editable={!loading}
+          />
+
+          <TextInput
+            style={[
+              tw`w-full p-3 mb-4 text-[16px] text-white bg-[#0A1538] rounded-xl border-2 border-black`,
+              { fontFamily: "Poppins-Regular" },
+            ]}
+            placeholder="Confirmar nova senha"
+            placeholderTextColor="#999"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            editable={!loading}
+          />
+
+          <TouchableOpacity
+            style={[
+              tw`w-full py-3 mb-4 rounded-lg items-center`,
+              loading ? tw`bg-gray-500` : tw`bg-[#D2042D]`,
+            ]}
+            onPress={handleResetPassword}
+            disabled={loading || !code || !newPassword || !confirmPassword}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text
+                style={[
+                  tw`text-white text-lg`,
+                  { fontFamily: "Poppins-Regular" },
+                ]}
+              >
+                Redefinir Senha
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={tw`text-sm text-blue-600 text-center`}>
+              Voltar para Login
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
