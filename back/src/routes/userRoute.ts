@@ -11,7 +11,7 @@ routes.post("/redefinir-senha", controller.resetPassword);
 // rotas que precisam de autenticação
 routes.get("/:id", validadeAcess, controller.getUserById);
 routes.put("/mail", validadeAcess, controller.updateMail);
-routes.put("/senha", validadeAcess, controller.updatePassword);
+routes.put("/alterar-senha", validadeAcess, controller.updatePassword);
 
 // somente o adm pode acessar
 routes.get("/list", validadeAcess, controller.list);

@@ -69,7 +69,7 @@ export default function Login({ navigation }: Props) {
       }
     } catch (error: any) {
       console.error("Erro durante o login:", error);
-      setErro(error.response?.data?.error || "Erro ao fazer login");
+      setErro(error.response?.data?.erro || "Erro ao fazer login");
     } finally {
       setLoading(false);
     }

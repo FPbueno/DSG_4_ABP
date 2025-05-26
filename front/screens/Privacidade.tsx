@@ -30,11 +30,15 @@ const Privacidade = () => {
     <SafeAreaView style={tw`flex-1 bg-[#071025]`}>
       <ScrollView contentContainerStyle={tw`p-4 mt-10`}>
         <View style={tw`mb-6`}>
-          <Text style={tw`text-2xl font-bold text-white text-center mb-10`}>Privacidade</Text>
+          <Text style={tw`text-2xl font-bold text-white text-center mb-10`}>
+            Privacidade
+          </Text>
 
           {/* Senha Atual */}
           <View style={tw`mb-4`}>
-            <Text style={tw`text-lg font-semibold text-white`}>Senha Atual</Text>
+            <Text style={tw`text-lg font-semibold text-white`}>
+              Senha Atual
+            </Text>
             <TextInput
               style={tw`w-full p-3 mt-2 bg-[#0A1538] rounded-xl border-2 border-black text-white`}
               value={senhaAtual}
@@ -58,7 +62,9 @@ const Privacidade = () => {
 
           {/* Confirmar Nova Senha */}
           <View style={tw`mb-6`}>
-            <Text style={tw`text-lg font-semibold text-white`}>Confirmar Nova Senha</Text>
+            <Text style={tw`text-lg font-semibold text-white`}>
+              Confirmar Nova Senha
+            </Text>
             <TextInput
               style={tw`w-full p-3 mt-2 bg-[#0A1538] rounded-xl border-2 border-black text-white`}
               value={confirmarNovaSenha}
@@ -73,7 +79,9 @@ const Privacidade = () => {
             style={tw`bg-[#D2042D] py-2.5 px-5 rounded-[20px] w-full my-1.5`}
             onPress={alterarSenha}
           >
-            <Text style={tw`text-white text-lg font-semibold text-center`}>Alterar Senha</Text>
+            <Text style={tw`text-white text-lg font-semibold text-center`}>
+              Alterar Senha
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

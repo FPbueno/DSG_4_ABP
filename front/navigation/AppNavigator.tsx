@@ -12,6 +12,7 @@ import Login from "../screens/Login";
 import Register from "../screens/Register";
 import Recuperacao from "../screens/Recuperacao";
 import ResetPassword from "../screens/ResetPassword";
+import ChangePassword from "../screens/ChangePassword";
 import Home from "../screens/Home";
 import Settings from "../screens/Settings";
 import MapScreen from "../screens/Map";
@@ -34,7 +35,7 @@ export type DrawerParamList = {
   Settings: undefined;
   Statistics: undefined;
   ConfiguraConta: undefined;
-  ResetPassword: undefined;
+  ChangePassword: undefined;
 };
 
 interface DrawerContentProps {
@@ -95,21 +96,22 @@ const DrawerContent = ({ navigation }: DrawerContentProps) => {
           )}
         />
         <DrawerItem
-          label="Sair"
-          onPress={handleLogout}
-          icon={({ color, size }) => (
-            <MaterialCommunityIcons name="logout" color={color} size={size} />
-          )}
-        />
-        <DrawerItem
           label="Alterar Senha"
-          onPress={() => navigation.navigate("ResetPassword")}
+          onPress={() => navigation.navigate("ChangePassword")}
           icon={({ color, size }) => (
             <MaterialCommunityIcons
               name="lock-reset"
               color={color}
               size={size}
             />
+          )}
+        />
+        <View style={styles.separator} />
+        <DrawerItem
+          label="Sair"
+          onPress={handleLogout}
+          icon={({ color, size }) => (
+            <MaterialCommunityIcons name="logout" color={color} size={size} />
           )}
         />
       </View>
@@ -162,10 +164,10 @@ const MainDrawer = () => {
           </MainLayout>
         )}
       </Drawer.Screen>
-      <Drawer.Screen name="ResetPassword">
+      <Drawer.Screen name="ChangePassword">
         {(props) => (
           <MainLayout {...props}>
-            <ResetPassword />
+            <ChangePassword />
           </MainLayout>
         )}
       </Drawer.Screen>
@@ -206,6 +208,11 @@ const styles = StyleSheet.create({
   },
   drawerSection: {
     marginTop: 20,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginVertical: 10,
   },
 });
 

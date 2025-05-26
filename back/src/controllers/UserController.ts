@@ -65,7 +65,10 @@ class UserController {
       });
     } catch (error) {
       console.error("Erro ao fazer login:", error);
-      res.status(500).json({ erro: "Erro ao fazer login" });
+      res.status(500).json({
+        erro: "Erro ao fazer login",
+        detalhes: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     }
   }
 
@@ -226,16 +229,74 @@ class UserController {
   }
 
   public async updatePassword(req: Request, res: Response): Promise<void> {
-    const { password } = req.body;
+    const { currentPassword, newPassword } = req.body;
     const { id } = res.locals;
-    if (!password) {
-      res.json({ erro: "Forneça a nova senha" });
-    } else {
-      const r: any = await query(
-        "UPDATE users SET password=$2 WHERE id=$1 RETURNING id, mail, profile",
-        [id, password]
+
+    console.log("Recebendo requisição de alteração de senha:", {
+      userId: id,
+      hasCurrentPassword: !!currentPassword,
+      hasNewPassword: !!newPassword,
+    });
+
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ erro: "Forneça a senha atual e a nova senha" });
+      return;
+    }
+
+    try {
+      // Buscar o usuário e sua senha atual
+      const userResponse: any = await query(
+        "SELECT senha FROM users WHERE id = $1",
+        [id]
       );
-      res.json(r);
+
+      console.log("Resposta da busca do usuário:", userResponse);
+
+      if (!userResponse || userResponse.length === 0) {
+        res.status(404).json({ erro: "Usuário não encontrado" });
+        return;
+      }
+
+      const user = userResponse[0];
+
+      // Verificar se a senha atual está correta
+      const passwordMatch = await bcrypt.compare(currentPassword, user.senha);
+      console.log("Senha atual corresponde:", passwordMatch);
+
+      if (!passwordMatch) {
+        res.status(401).json({ erro: "Senha atual incorreta" });
+        return;
+      }
+
+      // Gerar hash da nova senha
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Atualizar a senha no banco de dados
+      const updateResponse: any = await query(
+        "UPDATE users SET senha = $1 WHERE id = $2 RETURNING id",
+        [hashedNewPassword, id]
+      );
+
+      console.log("Resposta da atualização:", updateResponse);
+
+      if (
+        updateResponse &&
+        (updateResponse.rowcount > 0 || updateResponse.length > 0)
+      ) {
+        res.json({ mensagem: "Senha alterada com sucesso" });
+      } else {
+        console.error("Erro na atualização: resposta vazia ou inválida");
+        res.status(500).json({
+          erro: "Erro ao atualizar a senha",
+          detalhes: "A atualização não retornou um resultado válido",
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar senha:", error);
+      res.status(500).json({
+        erro: "Erro ao atualizar a senha",
+        detalhes: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     }
   }
 

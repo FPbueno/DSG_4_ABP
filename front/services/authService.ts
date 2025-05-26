@@ -1,5 +1,6 @@
 import axios from "axios";
 import { removeFromLocalStorage } from "../utils/localStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = process.env.API_URL || "http://192.168.15.92:3000";
 
@@ -85,7 +86,13 @@ export const authService = {
         console.error("Dados do erro:", error.response?.data);
 
         if (error.response?.data?.erro) {
-          throw new Error(error.response.data.erro);
+          const mensagemErro = error.response.data.detalhes
+            ? `${error.response.data.erro}: ${error.response.data.detalhes}`
+            : error.response.data.erro;
+          throw new Error(mensagemErro);
+        }
+        if (error.response?.data?.error) {
+          throw new Error(error.response.data.error);
         }
       }
       throw new Error("Erro ao solicitar recuperação de senha");
@@ -125,6 +132,73 @@ export const authService = {
         throw new Error(error.response.data.error || "Erro ao redefinir senha");
       }
       throw new Error("Erro ao redefinir senha");
+    }
+  },
+
+  async changePassword(
+    currentPassword: string,
+    newPassword: string
+  ): Promise<any> {
+    try {
+      const userData = await AsyncStorage.getItem("user");
+      if (!userData) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      const { token } = JSON.parse(userData);
+      if (!token) {
+        throw new Error("Token não encontrado");
+      }
+
+      const response = await axios.put(
+        `${API_URL}/user/alterar-senha`,
+        {
+          currentPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Resposta do servidor:", response.data);
+
+      // Se a resposta tem mensagem de sucesso, retorna sucesso
+      if (response.data && response.data.mensagem) {
+        console.log("Mensagem de sucesso encontrada:", response.data.mensagem);
+        return { mensagem: response.data.mensagem };
+      }
+
+      // Se a resposta tem mensagem de erro, lança o erro
+      if (response.data && response.data.erro) {
+        console.log("Erro encontrado:", response.data.erro);
+        throw new Error(response.data.erro);
+      }
+
+      console.log(
+        "Nenhuma mensagem específica encontrada, retornando sucesso padrão"
+      );
+      // Se chegou aqui, a requisição foi bem sucedida
+      return { mensagem: "Senha alterada com sucesso" };
+    } catch (error) {
+      console.error("Erro detalhado:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Status do erro:", error.response?.status);
+        console.error("Dados do erro:", error.response?.data);
+
+        if (error.response?.data?.erro) {
+          const mensagemErro = error.response.data.detalhes
+            ? `${error.response.data.erro}: ${error.response.data.detalhes}`
+            : error.response.data.erro;
+          throw new Error(mensagemErro);
+        }
+        if (error.response?.data?.error) {
+          throw new Error(error.response.data.error);
+        }
+      }
+      throw new Error("Erro ao alterar senha");
     }
   },
 };
