@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   NavigationContainer,
   useRoute,
@@ -25,6 +25,8 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { DrawerItem } from "@react-navigation/drawer";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import ConfiguraConta from "screens/ConfiguraConta";
+import LandingPage from "../screens/LandingPage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -218,6 +220,25 @@ const styles = StyleSheet.create({
 
 export const AppNavigator = () => {
   const { isAuthenticated } = useAuth();
+  const [showLanding, setShowLanding] = useState(false);
+
+  useEffect(() => {
+    const checkFirstLogin = async () => {
+      if (isAuthenticated) {
+        const hasSeenLanding = await AsyncStorage.getItem("hasSeenLanding");
+        if (!hasSeenLanding) {
+          setShowLanding(true);
+          await AsyncStorage.setItem("hasSeenLanding", "true");
+        } else {
+          setShowLanding(false);
+        }
+      } else {
+        setShowLanding(false);
+      }
+    };
+
+    checkFirstLogin();
+  }, [isAuthenticated]);
 
   return (
     <NavigationContainer>
@@ -232,7 +253,16 @@ export const AppNavigator = () => {
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="ResetPassword" component={ResetPassword} />
             <Stack.Screen name="Recuperacao" component={Recuperacao} />
+            <Stack.Screen name="Landing" component={LandingPage} />
           </>
+        ) : showLanding ? (
+          <Stack.Screen
+            name="Landing"
+            component={LandingPage}
+            options={{
+              gestureEnabled: false,
+            }}
+          />
         ) : (
           <Stack.Screen
             name="MainDrawer"
