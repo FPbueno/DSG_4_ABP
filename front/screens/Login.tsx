@@ -66,8 +66,30 @@ export default function Login({ navigation }: Props) {
           name: response.data.nome || "Usuário",
           email: response.data.email || email,
         };
+
+        // Verificar se é o primeiro login deste usuário
+        const hasSeenLanding = await AsyncStorage.getItem(
+          `hasSeenLanding_${response.data.id}`
+        );
+
+        // Salvar dados do usuário
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
+        await AsyncStorage.setItem(
+          "user",
+          JSON.stringify({
+            token: response.data.token,
+            userId: response.data.id.toString(),
+          })
+        );
+
+        // Fazer login
         await login(response.data.token, response.data.id.toString());
+
+        // Se for primeiro login deste usuário, navegar para landing
+        if (!hasSeenLanding) {
+          navigation.navigate("Landing");
+        }
+
         console.log("Dados do usuário salvos, autenticação atualizada");
       }
     } catch (error: any) {

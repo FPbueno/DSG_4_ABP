@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useAuth } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Login: undefined;
@@ -27,15 +28,18 @@ const LandingPage = () => {
   const navigation = useNavigation<LandingScreenNavigationProp>();
   const { isAuthenticated } = useAuth();
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (isAuthenticated) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: "MainDrawer" }],
-        })
-      );
+      // Pegar o ID do usuário do AsyncStorage
+      const userStr = await AsyncStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        // Marcar como visto para este usuário específico
+        await AsyncStorage.setItem(`hasSeenLanding_${user.userId}`, "true");
+      }
+      navigation.navigate("MainDrawer");
     } else {
+      // Se não estiver autenticado, volta para Login
       navigation.navigate("Login");
     }
   };
@@ -49,13 +53,13 @@ const LandingPage = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>DSG - DATA SOLUTIONS GROUP</Text>
+          <Text style={styles.title}>AquaTrace </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sobre o Projeto</Text>
           <Text style={styles.text}>
-            O DSG é uma solução inovadora para rastreamento de derivadores
+            O AquaTrace é uma solução inovadora para rastreamento de derivadores
             utilizados em estudos oceanográficos. Nossa aplicação oferece uma
             interface moderna para monitoramento em tempo real de dispositivos
             que acompanham correntes marítimas.

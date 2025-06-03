@@ -220,25 +220,6 @@ const styles = StyleSheet.create({
 
 export const AppNavigator = () => {
   const { isAuthenticated } = useAuth();
-  const [showLanding, setShowLanding] = useState(false);
-
-  useEffect(() => {
-    const checkFirstLogin = async () => {
-      if (isAuthenticated) {
-        const hasSeenLanding = await AsyncStorage.getItem("hasSeenLanding");
-        if (!hasSeenLanding) {
-          setShowLanding(true);
-          await AsyncStorage.setItem("hasSeenLanding", "true");
-        } else {
-          setShowLanding(false);
-        }
-      } else {
-        setShowLanding(false);
-      }
-    };
-
-    checkFirstLogin();
-  }, [isAuthenticated]);
 
   return (
     <NavigationContainer>
@@ -255,14 +236,6 @@ export const AppNavigator = () => {
             <Stack.Screen name="Recuperacao" component={Recuperacao} />
             <Stack.Screen name="Landing" component={LandingPage} />
           </>
-        ) : showLanding ? (
-          <Stack.Screen
-            name="Landing"
-            component={LandingPage}
-            options={{
-              gestureEnabled: false,
-            }}
-          />
         ) : (
           <Stack.Screen
             name="MainDrawer"
