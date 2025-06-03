@@ -78,7 +78,7 @@ class LocationController {
 
       // Construção da query base
       let baseQuery = `
-        SELECT id, latitude, longitude, speed 
+        SELECT id, latitude, longitude, speed, created_at 
         FROM locations 
         WHERE 1=1
       `;
@@ -147,6 +147,7 @@ class LocationController {
           latitude: location.latitude,
           longitude: location.longitude,
           speed: location.speed,
+          timestamp: location.created_at,
         })),
         pagination: {
           total: total,
@@ -164,7 +165,7 @@ class LocationController {
   public async getLastLocation(req: Request, res: Response): Promise<void> {
     try {
       const response = await query(
-        "SELECT id, latitude, longitude, speed FROM locations ORDER BY created_at DESC LIMIT 1"
+        "SELECT id, latitude, longitude, speed, created_at FROM locations ORDER BY created_at DESC LIMIT 1"
       );
 
       if (!Array.isArray(response) || response.length === 0) {
@@ -178,6 +179,7 @@ class LocationController {
         latitude: location.latitude,
         longitude: location.longitude,
         speed: location.speed,
+        timestamp: location.created_at,
       });
     } catch (error: any) {
       console.error("Database error:", error);

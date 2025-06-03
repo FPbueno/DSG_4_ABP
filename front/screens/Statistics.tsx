@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Platform,
-  TouchableOpacity,
+  Pressable,
 } from "react-native";
 import api from "../services/api";
 import StatisticsCard from "../components/StatisticsCard";
@@ -16,12 +16,17 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as Print from "expo-print";
 import { MaterialIcons } from "@expo/vector-icons";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
 interface Location {
   id: number;
   latitude: string;
   longitude: string;
   speed: string;
+  timestamp: string;
+  created_at?: string;
 }
 
 interface Pagination {
@@ -68,11 +73,29 @@ const Statistics = () => {
     totalPages: 1,
   });
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const date = new Date();
+    date.setHours(23, 59, 59, 999);
+    return date;
+  });
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [orientation, setOrientation] = useState("PORTRAIT");
 
   const fetchLocations = async (page: number = 1) => {
     try {
       setLoading(true);
       const response = await api.get(`/locations?page=${page}&limit=10`);
+
+      console.log(
+        "Dados recebidos da API:",
+        JSON.stringify(response.data.data, null, 2)
+      );
 
       if (response.data && Array.isArray(response.data.data)) {
         setLocations(response.data.data);
@@ -93,6 +116,14 @@ const Statistics = () => {
 
   useEffect(() => {
     fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setOrientation(window.width > window.height ? "LANDSCAPE" : "PORTRAIT");
+    });
+
+    return () => subscription?.remove();
   }, []);
 
   const handlePageChange = (newPage: number) => {
@@ -309,22 +340,61 @@ const Statistics = () => {
     setCurrentSlide(currentIndex);
   };
 
+  const filterLocationsByDateRange = (locations: Location[]) => {
+    console.log("Total locations before filter:", locations.length);
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+
+    const filtered = locations.filter((location) => {
+      const locationDate = new Date(location.timestamp);
+
+      // Ajusta as datas para considerar o dia inteiro
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+
+      console.log("Location Date:", locationDate);
+      console.log("Location Data:", location);
+      console.log("Start:", start);
+      console.log("End:", end);
+
+      return locationDate >= start && locationDate <= end;
+    });
+
+    console.log("Filtered locations:", filtered.length);
+    return filtered;
+  };
+
   const exportToCSV = async () => {
     try {
-      if (locations.length === 0) {
-        alert("Não há dados para exportar");
+      const filteredLocations = filterLocationsByDateRange(locations);
+
+      if (filteredLocations.length === 0) {
+        alert("Não há dados para exportar no período selecionado");
         return;
       }
 
-      const headers = ["ID", "Latitude", "Longitude", "Velocidade (km/h)"];
+      const headers = [
+        "ID",
+        "Latitude",
+        "Longitude",
+        "Velocidade (km/h)",
+        "Data/Hora",
+      ];
       const csvContent = [
         headers.join(","),
-        ...locations.map((loc) =>
-          [loc.id, loc.latitude, loc.longitude, loc.speed].join(",")
+        ...filteredLocations.map((loc) =>
+          [loc.id, loc.latitude, loc.longitude, loc.speed, loc.timestamp].join(
+            ","
+          )
         ),
       ].join("\n");
 
-      const fileUri = `${FileSystem.cacheDirectory}estatisticas.csv`;
+      const fileUri = `${FileSystem.cacheDirectory}estatisticas_${
+        startDate.toISOString().split("T")[0]
+      }_${endDate.toISOString().split("T")[0]}.csv`;
       await FileSystem.writeAsStringAsync(fileUri, csvContent);
 
       if (Platform.OS === "web") {
@@ -332,7 +402,9 @@ const Statistics = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "estatisticas.csv";
+        a.download = `estatisticas_${startDate.toISOString().split("T")[0]}_${
+          endDate.toISOString().split("T")[0]
+        }.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
       } else {
@@ -346,15 +418,17 @@ const Statistics = () => {
 
   const exportToPDF = async () => {
     try {
-      if (locations.length === 0) {
-        alert("Não há dados para exportar");
+      const filteredLocations = filterLocationsByDateRange(locations);
+
+      if (filteredLocations.length === 0) {
+        alert("Não há dados para exportar no período selecionado");
         return;
       }
 
       const stats = calculateStats();
-      const totalDistance = locations.reduce((acc, curr, index) => {
+      const totalDistance = filteredLocations.reduce((acc, curr, index) => {
         if (index === 0) return 0;
-        const prevLoc = locations[index - 1];
+        const prevLoc = filteredLocations[index - 1];
         return (
           acc +
           calculateDistance(
@@ -379,6 +453,10 @@ const Statistics = () => {
           </head>
           <body>
             <h1>Relatório de Estatísticas</h1>
+            <h2>Período</h2>
+            <p>De: ${startDate.toLocaleDateString()}</p>
+            <p>Até: ${endDate.toLocaleDateString()}</p>
+            
             <h2>Resumo</h2>
             <p>Velocidade Média: ${stats?.avgSpeed} km/h</p>
             <p>Velocidade Máxima: ${stats?.maxSpeed} km/h</p>
@@ -392,8 +470,9 @@ const Statistics = () => {
                 <th>Latitude</th>
                 <th>Longitude</th>
                 <th>Velocidade (km/h)</th>
+                <th>Data/Hora</th>
               </tr>
-              ${locations
+              ${filteredLocations
                 .map(
                   (loc) => `
                 <tr>
@@ -401,6 +480,7 @@ const Statistics = () => {
                   <td>${loc.latitude}</td>
                   <td>${loc.longitude}</td>
                   <td>${loc.speed}</td>
+                  <td>${new Date(loc.timestamp).toLocaleString()}</td>
                 </tr>
               `
                 )
@@ -415,7 +495,9 @@ const Statistics = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "estatisticas.pdf";
+        a.download = `estatisticas_${startDate.toISOString().split("T")[0]}_${
+          endDate.toISOString().split("T")[0]
+        }.pdf`;
         a.click();
         window.URL.revokeObjectURL(url);
       } else {
@@ -438,50 +520,168 @@ const Statistics = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          orientation === "LANDSCAPE" && styles.headerLandscape,
+        ]}
+      >
         <Text style={styles.title}>Estatísticas de Deslocamento</Text>
       </View>
-      <View style={styles.exportSection}>
-        <Text style={styles.exportTitle}>Exportar Relatório</Text>
-        <View style={styles.exportButtons}>
-          <TouchableOpacity style={styles.exportButton} onPress={exportToCSV}>
-            <MaterialIcons name="file-download" size={24} color="#fff" />
-            <Text style={styles.exportButtonText}>Baixar CSV</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.exportButton} onPress={exportToPDF}>
-            <MaterialIcons name="picture-as-pdf" size={24} color="#fff" />
-            <Text style={styles.exportButtonText}>Baixar PDF</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
 
-      {locations.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhuma localização encontrada</Text>
-        </View>
-      ) : (
-        <>
-          <View style={styles.statsContainer}>
-            <StatisticsCard
-              label="Velocidade Média"
-              value={stats?.avgSpeed || "0"}
-            />
-            <StatisticsCard
-              label="Velocidade Máxima"
-              value={stats?.maxSpeed || "0"}
-            />
-            <StatisticsCard
-              label="Velocidade Mínima"
-              value={stats?.minSpeed || "0"}
-            />
+      <View
+        style={[
+          styles.contentContainer,
+          orientation === "LANDSCAPE" && styles.contentContainerLandscape,
+        ]}
+      >
+        <View
+          style={[
+            styles.leftColumn,
+            orientation === "LANDSCAPE" && styles.leftColumnLandscape,
+          ]}
+        >
+          <View style={styles.controlPanel}>
+            <View style={styles.dateRangeContainer}>
+              <Text style={styles.dateRangeTitle}>Selecione o Período</Text>
+              <View style={styles.dateInputs}>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.dateInput,
+                    pressed && {
+                      backgroundColor: "#283593",
+                      transform: [{ scale: 0.98 }],
+                    },
+                  ]}
+                  onPress={() => setShowStartDatePicker(true)}
+                >
+                  <Text style={styles.dateLabel}>Data Inicial:</Text>
+                  <Text style={styles.dateValue}>
+                    {startDate.toLocaleDateString()}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.dateInput,
+                    pressed && {
+                      backgroundColor: "#283593",
+                      transform: [{ scale: 0.98 }],
+                    },
+                  ]}
+                  onPress={() => setShowEndDatePicker(true)}
+                >
+                  <Text style={styles.dateLabel}>Data Final:</Text>
+                  <Text style={styles.dateValue}>
+                    {endDate.toLocaleDateString()}
+                  </Text>
+                </Pressable>
+              </View>
+
+              {showStartDatePicker && (
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  display="default"
+                  onChange={(
+                    event: DateTimePickerEvent,
+                    selectedDate?: Date
+                  ) => {
+                    setShowStartDatePicker(false);
+                    if (selectedDate) {
+                      setStartDate(selectedDate);
+                    }
+                  }}
+                />
+              )}
+
+              {showEndDatePicker && (
+                <DateTimePicker
+                  value={endDate}
+                  mode="date"
+                  display="default"
+                  onChange={(
+                    event: DateTimePickerEvent,
+                    selectedDate?: Date
+                  ) => {
+                    setShowEndDatePicker(false);
+                    if (selectedDate) {
+                      setEndDate(selectedDate);
+                    }
+                  }}
+                />
+              )}
+            </View>
+
+            <View style={styles.exportButtons}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.exportButton,
+                  pressed && {
+                    backgroundColor: "#283593",
+                    transform: [{ scale: 0.98 }],
+                  },
+                ]}
+                onPress={exportToCSV}
+              >
+                <MaterialIcons name="file-download" size={24} color="#fff" />
+                <Text style={styles.exportButtonText}>Baixar CSV</Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.exportButton,
+                  pressed && {
+                    backgroundColor: "#283593",
+                    transform: [{ scale: 0.98 }],
+                  },
+                ]}
+                onPress={exportToPDF}
+              >
+                <MaterialIcons name="picture-as-pdf" size={24} color="#fff" />
+                <Text style={styles.exportButtonText}>Baixar PDF</Text>
+              </Pressable>
+            </View>
           </View>
 
+          {locations.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                Nenhuma localização encontrada
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.statsContainer}>
+              <StatisticsCard
+                label="Velocidade Média"
+                value={stats?.avgSpeed || "0"}
+              />
+              <StatisticsCard
+                label="Velocidade Máxima"
+                value={stats?.maxSpeed || "0"}
+              />
+              <StatisticsCard
+                label="Velocidade Mínima"
+                value={stats?.minSpeed || "0"}
+              />
+            </View>
+          )}
+        </View>
+
+        <View
+          style={[
+            styles.rightColumn,
+            orientation === "LANDSCAPE" && styles.rightColumnLandscape,
+          ]}
+        >
           <View>
             <ScrollView
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
-              style={styles.carousel}
+              style={[
+                styles.carousel,
+                orientation === "LANDSCAPE" && styles.carouselLandscape,
+              ]}
               onScroll={handleScroll}
               scrollEventThrottle={16}
             >
@@ -500,10 +700,17 @@ const Statistics = () => {
 
           <View style={styles.mapSection}>
             <Text style={styles.sectionTitle}>Trajeto Percorrido</Text>
-            <View style={styles.mapContainer}>{renderMap()}</View>
+            <View
+              style={[
+                styles.mapContainer,
+                orientation === "LANDSCAPE" && styles.mapContainerLandscape,
+              ]}
+            >
+              {renderMap()}
+            </View>
           </View>
-        </>
-      )}
+        </View>
+      </View>
 
       {error && <Text style={styles.errorText}>{error}</Text>}
     </ScrollView>
@@ -522,6 +729,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
+  headerLandscape: {
+    marginBottom: 10,
+  },
   title: {
     color: "#fff",
     fontSize: 24,
@@ -536,6 +746,9 @@ const styles = StyleSheet.create({
   carousel: {
     height: 300,
     marginBottom: 20,
+  },
+  carouselLandscape: {
+    height: 250,
   },
   chartContainer: {
     width: Dimensions.get("window").width - 40,
@@ -644,6 +857,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
   },
+  mapContainerLandscape: {
+    height: 400,
+  },
   mapTitle: {
     color: "#fff",
     fontSize: 16,
@@ -725,38 +941,101 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
   },
-  exportSection: {
-    alignItems: "center",
-    marginBottom: 20,
+  controlPanel: {
     backgroundColor: "#0A2463",
     padding: 15,
     borderRadius: 10,
+    marginBottom: 20,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  exportTitle: {
+  dateRangeContainer: {
+    marginBottom: 15,
+  },
+  dateRangeTitle: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "poppins-bold",
     marginBottom: 10,
   },
+  dateInputs: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  dateInput: {
+    backgroundColor: "#1a237e",
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
+  dateLabel: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "poppins-regular",
+    marginBottom: 5,
+    opacity: 0.8,
+  },
+  dateValue: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "poppins-bold",
+  },
   exportButtons: {
     flexDirection: "row",
-    gap: 20,
-    justifyContent: "center",
+    justifyContent: "space-between",
+    gap: 10,
   },
   exportButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#1a237e",
-    padding: 12,
+    padding: 14,
     borderRadius: 8,
     gap: 8,
-    minWidth: 140,
+    flex: 1,
     justifyContent: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   exportButtonText: {
     color: "#fff",
     fontSize: 14,
     fontFamily: "poppins-medium",
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  contentContainerLandscape: {
+    flexDirection: "row",
+    gap: 20,
+  },
+  leftColumn: {
+    flex: 1,
+  },
+  leftColumnLandscape: {
+    flex: 0.4,
+  },
+  rightColumn: {
+    flex: 1,
+  },
+  rightColumnLandscape: {
+    flex: 0.6,
   },
 });
 
