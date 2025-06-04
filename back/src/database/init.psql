@@ -9,8 +9,6 @@ CREATE TABLE IF NOT EXISTS usuario (
  
 CREATE TABLE IF NOT EXISTS locations (
 	id SERIAL PRIMARY KEY,
-	id_usuario INTEGER,
-	FOREIGN KEY (id_usuario) REFERENCES usuario(id),
 	latitude DECIMAL(9, 6) NOT NULL,
 	longitude DECIMAL(9, 6) NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
