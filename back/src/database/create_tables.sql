@@ -24,5 +24,4 @@ CREATE TABLE locations (
 
 -- Índices para melhor performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_locations_user_id ON locations(user_id);
 CREATE INDEX IF NOT EXISTS idx_locations_coordinates ON locations(latitude, longitude); 
