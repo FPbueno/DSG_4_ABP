@@ -36,6 +36,8 @@ export default function Register({ navigation }: Props) {
   const [confirma, setConfirma] = useState("");
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sucesso, setSucesso] = useState("");
+
 
   const adicionar = async () => {
     if (!nome || !email || !telefone || !pais || !senha || !confirma) {
@@ -71,9 +73,11 @@ export default function Register({ navigation }: Props) {
       console.log("Resposta do servidor:", response.data);
 
       if (response.data.id) {
-        console.log("Usuário criado com sucesso, navegando para Login...");
-        navigation.navigate("Login");
-      } else {
+        setSucesso("Conta criada com sucesso!");
+        setErro("");
+      }
+
+      else {
         console.log("Erro na resposta do servidor:", response.data);
         setErro(response.data.erro || "Erro ao criar conta. Tente novamente.");
       }
@@ -139,6 +143,22 @@ export default function Register({ navigation }: Props) {
       </View>
 
       {erro ? <Text style={styles.errorText}>{erro}</Text> : null}
+      {sucesso ? (
+        <View style={styles.overlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalText}>{sucesso}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.modalButtonText}>Ir para o Login</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : null}
+
+
+
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -162,6 +182,55 @@ export default function Register({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.6)", // fundo escurecido
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 999,
+},
+
+modalBox: {
+  backgroundColor: "#071025", // azul
+  padding: 25,
+  borderRadius: 20,
+  alignItems: "center",
+  width: "80%",
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4.65,
+  elevation: 8,
+},
+
+modalText: {
+  color: "#fff",
+  fontSize: 18,
+  fontWeight: "bold",
+  marginBottom: 20,
+  textAlign: "center",
+  fontFamily: "poppins-regular",
+},
+
+modalButton: {
+  backgroundColor: "#fff",
+  paddingVertical: 10,
+  paddingHorizontal: 25,
+  borderRadius: 10,
+},
+
+modalButtonText: {
+  color: "#007bff",
+  fontSize: 16,
+  fontWeight: "bold",
+  fontFamily: "poppins-regular",
+},
+
+
   imagem: {
     width: 100,
     height: 100,
