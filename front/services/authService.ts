@@ -2,7 +2,7 @@ import axios from "axios";
 import { removeFromLocalStorage } from "../utils/localStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = process.env.API_URL || "http://192.168.15.92:3000";
+const API_URL = process.env.API_URL || "http://192.168.144.195:3000";
 
 export interface LoginData {
   email: string;
